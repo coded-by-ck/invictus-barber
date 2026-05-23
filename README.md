@@ -11,10 +11,22 @@ assets/
     style.css
   js/
     app.js
+    booking.js
+    storage.js
   img/
-    hero-invictus-barber.png
+    ...
 README.md
 ```
+
+CSS ativo:
+
+- `assets/css/style.css`
+
+JS ativo:
+
+- `assets/js/app.js`
+- `assets/js/booking.js`
+- `assets/js/storage.js`
 
 ## Como abrir
 
