@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Invictus Barber - barbearia premium com atendimento preciso, ambiente moderno e agendamento rapido."
+    />
+    <title>Invictus Barber | Barbearia Premium</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Oswald:wght@500;600;700&family=Playfair+Display:wght@600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="assets/css/style.css" />
+  </head>
+  <body>
+    <div class="loader" data-loader>
+      <div class="loader__brand">
+        <span>IB</span>
+        <strong>Invictus Barber</strong>
+      </div>
+      <div class="loader__bar"></div>
+    </div>
+
+    <div class="grain" aria-hidden="true"></div>
+    <canvas class="particles" data-particles aria-hidden="true"></canvas>
+
+    <header class="site-header" data-header>
+      <nav class="navbar" aria-label="Navegacao principal">
+        <a class="brand" href="#inicio" aria-label="Invictus Barber">
+          <span class="brand__mark">IB</span>
+          <span class="brand__text">
+            <strong class="text-3d gold-depth">Invictus</strong>
+            <small>Barber Studio</small>
+          </span>
+        </a>
+
+        <button
+          class="nav-toggle"
+          type="button"
+          aria-label="Abrir menu"
+          aria-controls="primary-menu"
+          aria-expanded="false"
+          data-nav-toggle
+        >
+          <span></span>
+          <span></span>
+        </button>
+
+        <div class="nav-menu" id="primary-menu" data-nav-menu>
+          <a href="#inicio">Inicio</a>
+          <a href="#experiencia">Sobre</a>
+          <a href="#servicos">Servicos</a>
+          <a href="#barbeiros">Barbeiros</a>
+          <a href="#galeria">Galeria</a>
+          <a href="#localizacao">Contato</a>
+        </div>
+
+        <a class="nav-cta" href="#agenda">Agendar horario</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero" id="inicio" data-parallax>
+        <div class="hero__ambient" aria-hidden="true"></div>
+        <div class="hero__overlay" aria-hidden="true"></div>
+        <div class="hero__grid" aria-hidden="true"></div>
+        <span class="hero__rail hero__rail--left" aria-hidden="true"></span>
+        <span class="hero__rail hero__rail--right" aria-hidden="true"></span>
+
+        <div class="hero__inner">
+          <div class="hero__content reveal">
+            <p class="eyebrow">Invictus Barber Studio</p>
+            <h1 class="text-3d title-depth">
+              Transformamos<br />
+              o seu visual.<br />
+              Elevamos sua<br />
+              <em>presenca.</em>
+            </h1>
+            <p class="hero__copy">
+              Servicos premium para homens que nao aceitam menos que o melhor.
+            </p>
+            <div class="hero__actions">
+              <a class="btn btn--primary" href="#agenda">Agendar horario</a>
+              <a class="btn btn--glass" href="#servicos">Nossos servicos</a>
+            </div>
+          </div>
+
+          <figure class="hero-visual reveal tilt-card" data-hero-carousel>
+            <img
+              class="hero-visual__slide is-active"
+              src="assets/img/tesoura.JPG"
+              alt="Barbeiro da Invictus Barber segurando tesoura em atendimento"
+            />
+            <img
+              class="hero-visual__slide"
+              src="assets/img/pablo.jpg"
+              alt="Pablo, barbeiro da Invictus Barber, em retrato cinematografico"
+            />
+          </figure>
+        </div>
+
+        <div class="hero-services" aria-label="Servicos em destaque">
+          <article class="hero-service reveal tilt-card">
+            <span class="service-icon service-icon--blade"></span>
+            <div>
+              <h3 class="text-3d gold-depth">Corte Masculino</h3>
+            </div>
+          </article>
+          <article class="hero-service reveal tilt-card">
+            <span class="service-icon service-icon--beard"></span>
+            <div>
+              <h3 class="text-3d gold-depth">Barba Premium</h3>
+            </div>
+          </article>
+          <article class="hero-service reveal tilt-card">
+            <span class="service-icon service-icon--spark"></span>
+            <div>
+              <h3 class="text-3d gold-depth">Degrade Fade</h3>
+            </div>
+          </article>
+          <article class="hero-service reveal tilt-card">
+            <span class="service-icon service-icon--blade"></span>
+            <div>
+              <h3 class="text-3d gold-depth">Sobrancelha Design</h3>
+            </div>
+          </article>
+          <article class="hero-service reveal tilt-card">
+            <span class="service-icon service-icon--spark"></span>
+            <div>
+              <h3 class="text-3d gold-depth">Finalizacao Premium</h3>
+            </div>
+          </article>
+          <article class="hero-service reveal tilt-card">
+            <span class="service-icon service-icon--beard"></span>
+            <div>
+              <h3 class="text-3d gold-depth">Atendimento Exclusivo</h3>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="section services" id="servicos">
+        <div class="section-heading reveal">
+          <p class="eyebrow">Menu premium</p>
+          <h2 class="text-3d title-depth">Servicos organizados para decidir rapido.</h2>
+          <p>
+            Uma vitrine clara, comercial e elegante: categorias expansivas,
+            duracao, valor e chamada direta para agendamento.
+          </p>
+        </div>
+
+        <div class="accordion" data-accordion>
+          <article class="service-panel reveal is-open">
+            <button class="service-panel__trigger" type="button" aria-expanded="true">
+              <span class="text-3d gold-depth">Assinaturas</span>
+              <strong>a partir de R$ 130</strong>
+            </button>
+            <div class="service-panel__content">
+              <div class="price-row">
+                <div>
+                  <h3 class="text-3d title-depth">Assinatura (corte e barba terapia)</h3>
+                  <p>Plano premium com corte e ritual de barba terapia.</p>
+                </div>
+                <span>60 min</span>
+                <strong>R$ 150</strong>
+              </div>
+              <div class="price-row">
+                <div>
+                  <h3 class="text-3d title-depth">Assinatura corte</h3>
+                  <p>Plano de corte para manter o visual sempre alinhado.</p>
+                </div>
+                <span>30 min</span>
+                <strong>R$ 130</strong>
+              </div>
+            </div>
+          </article>
+
+          <article class="service-panel reveal">
+            <button class="service-panel__trigger" type="button" aria-expanded="false">
+              <span class="text-3d gold-depth">Cortes e barba</span>
+              <strong>a partir de R$ 35</strong>
+            </button>
+            <div class="service-panel__content">
+              <div class="price-row">
+                <div>
+                  <h3 class="text-3d title-depth">Barba</h3>
+                  <p>Desenho, alinhamento e finalizacao da barba.</p>
+                </div>
+                <span>30 min</span>
+                <strong>R$ 35</strong>
+              </div>
+              <div class="price-row">
+                <div>
+                  <h3 class="text-3d title-depth">Corte</h3>
+                  <p>Corte masculino com acabamento Invictus.</p>
+                </div>
+                <span>30 min</span>
+                <strong>R$ 45</strong>
+              </div>
+              <div class="price-row">
+                <div>
+                  <h3 class="text-3d title-depth">Corte + barba</h3>
+                  <p>Combo completo para cabelo e barba.</p>
+                </div>
+                <span>60 min</span>
+                <strong>R$ 80</strong>
+              </div>
+              <div class="price-row">
+                <div>
+                  <h3 class="text-3d title-depth">Corte + barba + sobrancelha</h3>
+                  <p>Pacote completo com sobrancelha alinhada.</p>
+                </div>
+                <span>60 min</span>
+                <strong>R$ 90</strong>
+              </div>
+              <div class="price-row">
+                <div>
+                  <h3 class="text-3d title-depth">Corte + cavanhaque + sobrancelha</h3>
+                  <p>Corte, cavanhaque e acabamento de sobrancelha.</p>
+                </div>
+                <span>30 min</span>
+                <strong>R$ 70</strong>
+              </div>
+              <div class="price-row">
+                <div>
+                  <h3 class="text-3d title-depth">Corte + sobrancelha</h3>
+                  <p>Corte masculino com sobrancelha.</p>
+                </div>
+                <span>30 min</span>
+                <strong>R$ 55</strong>
+              </div>
+            </div>
+          </article>
+
+          <article class="service-panel reveal">
+            <button class="service-panel__trigger" type="button" aria-expanded="false">
+              <span class="text-3d gold-depth">Tratamentos</span>
+              <strong>a partir de R$ 30</strong>
+            </button>
+            <div class="service-panel__content">
+              <div class="price-row">
+                <div>
+                  <h3 class="text-3d title-depth">Corte + hidratacao</h3>
+                  <p>Corte com tratamento de hidratacao.</p>
+                </div>
+                <span>45 min</span>
+                <strong>R$ 70</strong>
+              </div>
+              <div class="price-row">
+                <div>
+                  <h3 class="text-3d title-depth">Hidratacao</h3>
+                  <p>Tratamento rapido para revitalizar os fios.</p>
+                </div>
+                <span>15 min</span>
+                <strong>R$ 30</strong>
+              </div>
+              <div class="price-row">
+                <div>
+                  <h3 class="text-3d title-depth">Limpeza de pele</h3>
+                  <p>Cuidado facial para renovar a pele.</p>
+                </div>
+                <span>30 min</span>
+                <strong>R$ 50</strong>
+              </div>
+              <div class="price-row">
+                <div>
+                  <h3 class="text-3d title-depth">Luzes</h3>
+                  <p>Clareamento com acabamento premium.</p>
+                </div>
+                <span>30 min</span>
+                <strong>R$ 140</strong>
+              </div>
+              <div class="price-row">
+                <div>
+                  <h3 class="text-3d title-depth">Luzes + corte</h3>
+                  <p>Luzes com corte de finalizacao.</p>
+                </div>
+                <span>15 min</span>
+                <strong>R$ 185</strong>
+              </div>
+              <div class="price-row">
+                <div>
+                  <h3 class="text-3d title-depth">Nevou</h3>
+                  <p>Visual platinado com assinatura da casa.</p>
+                </div>
+                <span>60 min</span>
+                <strong>R$ 160</strong>
+              </div>
+              <div class="price-row">
+                <div>
+                  <h3 class="text-3d title-depth">Nevou + corte</h3>
+                  <p>Nevou com corte para acabamento completo.</p>
+                </div>
+                <span>15 min</span>
+                <strong>R$ 200</strong>
+              </div>
+              <div class="price-row">
+                <div>
+                  <h3 class="text-3d title-depth">Selagem</h3>
+                  <p>Tratamento de alinhamento e acabamento dos fios.</p>
+                </div>
+                <span>30 min</span>
+                <strong>R$ 130</strong>
+              </div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="section experience" id="experiencia">
+        <div class="split">
+          <div class="section-heading reveal">
+            <p class="eyebrow">Experiencia Invictus</p>
+            <h2 class="text-3d title-depth">Ambiente real com acabamento de studio premium.</h2>
+            <p>
+              O visual nasce do que a barbearia ja tem: espelhos circulares,
+              cimento frio, bancada escura, produtos selecionados e hospitalidade.
+            </p>
+          </div>
+          <div class="experience-stack">
+            <figure class="media-card media-card--large reveal tilt-card">
+              <img src="assets/img/bancada.JPG" alt="Bancada da Invictus Barber com produtos e ferramentas" />
+              <figcaption class="text-3d gold-depth">Bancada tecnica</figcaption>
+            </figure>
+            <figure class="media-card reveal tilt-card">
+              <img src="assets/img/produtos-1.JPG" alt="Produtos premium usados na barbearia" />
+              <figcaption class="text-3d gold-depth">Finalizacao premium</figcaption>
+            </figure>
+            <figure class="media-card reveal tilt-card">
+              <img src="assets/img/geladeira.JPG" alt="Geladeira com bebidas no ambiente da Invictus Barber" />
+              <figcaption class="text-3d gold-depth">Hospitalidade</figcaption>
+            </figure>
+            <figure class="media-card reveal tilt-card">
+              <img src="assets/img/molduras.JPG" alt="Parede com quadros e molduras no ambiente da Invictus Barber" />
+              <figcaption class="text-3d gold-depth">Ambiente autoral</figcaption>
+            </figure>
+          </div>
+        </div>
+      </section>
+
+      <section class="section barbers" id="barbeiros">
+        <div class="section-heading section-heading--center reveal">
+          <p class="eyebrow">Mestres da casa</p>
+          <h2 class="text-3d title-depth">Barbeiros com assinatura propria.</h2>
+        </div>
+        <div class="barber-grid">
+          <article class="barber-card reveal tilt-card">
+            <img src="assets/img/pablo.jpg" alt="Pablo, barbeiro da Invictus Barber" />
+            <div>
+              <span>Style barber</span>
+              <h3 class="text-3d gold-depth">Pablo</h3>
+              <p>Acabamentos marcantes, degradês limpos e presença visual forte.</p>
+            </div>
+          </article>
+          <article class="barber-card reveal tilt-card">
+            <img src="assets/img/marco.jpg" alt="Marco, barbeiro da Invictus Barber" />
+            <div>
+              <span>Master barber</span>
+              <h3 class="text-3d gold-depth">Marco</h3>
+              <p>Tesoura, barba navalhada e corte alinhado ao estilo do cliente.</p>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="section gallery" id="galeria">
+        <div class="section-heading reveal">
+          <p class="eyebrow">Galeria editorial</p>
+          <h2 class="text-3d title-depth">Imagens reais, ritmo cinematografico.</h2>
+        </div>
+        <div class="gallery-grid">
+          <figure class="gallery-item gallery-item--large reveal tilt-card">
+            <img src="assets/img/acao-2.JPG" alt="Barbeiro realizando corte na Invictus Barber" />
+            <figcaption class="text-3d gold-depth">Precisao em movimento</figcaption>
+          </figure>
+          <figure class="gallery-item reveal tilt-card">
+            <img src="assets/img/acao-1.JPG" alt="Atendimento de corte masculino na Invictus Barber" />
+            <figcaption class="text-3d gold-depth">Atendimento sob medida</figcaption>
+          </figure>
+          <figure class="gallery-item reveal tilt-card">
+            <img src="assets/img/acao-3.JPG" alt="Corte masculino durante atendimento" />
+            <figcaption class="text-3d gold-depth">Foco no detalhe</figcaption>
+          </figure>
+          <figure class="gallery-item reveal tilt-card">
+            <img src="assets/img/tesoura.JPG" alt="Barbeiro segurando tesoura" />
+            <figcaption class="text-3d gold-depth">Tesoura e controle</figcaption>
+          </figure>
+          <figure class="gallery-item gallery-item--wide reveal tilt-card">
+            <img src="assets/img/dupla.JPG" alt="Equipe atendendo clientes no espaco Invictus Barber" />
+            <figcaption class="text-3d gold-depth">Ritual da casa</figcaption>
+          </figure>
+          <figure class="gallery-item reveal tilt-card">
+            <img src="assets/img/acao-4.JPG" alt="Barbeiro finalizando corte masculino" />
+            <figcaption class="text-3d gold-depth">Acabamento limpo</figcaption>
+          </figure>
+          <figure class="gallery-item reveal tilt-card">
+            <img src="assets/img/produtos-2.JPG" alt="Produtos de finalizacao premium" />
+            <figcaption class="text-3d gold-depth">Produtos selecionados</figcaption>
+          </figure>
+          <figure class="gallery-item reveal tilt-card">
+            <img src="assets/img/quadros.JPG" alt="Quadros decorativos da Invictus Barber" />
+            <figcaption class="text-3d gold-depth">Identidade visual</figcaption>
+          </figure>
+        </div>
+      </section>
+
+      <section class="section booking" id="agenda">
+        <div class="booking-experience booking-experience--concierge reveal" data-booking-app data-booking-step="service">
+          <div class="booking-aura" aria-hidden="true"></div>
+          <aside class="booking-command">
+            <a class="brand booking-brand" href="#inicio" aria-label="Invictus Barber">
+              <span class="brand__mark">IB</span>
+              <span class="brand__text">
+                <strong class="text-3d gold-depth">Invictus</strong>
+                <small>Barber Studio</small>
+              </span>
+            </a>
+            <div class="booking-copy">
+              <span class="booking-count" data-booking-count>01 / 06</span>
+              <p class="eyebrow" data-booking-kicker>Escolha o servico</p>
+              <h2 class="text-3d title-depth" data-booking-title>Qual ritual voce deseja agendar?</h2>
+              <p data-booking-description>
+                Selecione uma experiencia premium para iniciar seu atendimento.
+              </p>
+            </div>
+            <div class="booking-mini-summary" aria-label="Resumo atual">
+              <span data-summary-service>Servico</span>
+              <span data-summary-barber>Barbeiro</span>
+              <span data-summary-date>Data</span>
+              <span data-summary-time>Horario</span>
+            </div>
+            <div class="booking-status" data-booking-status role="status" aria-live="polite"></div>
+          </aside>
+
+          <form class="booking-flow" data-booking-concierge novalidate>
+            <section class="booking-screen is-active" data-booking-stage="service" aria-label="Escolher servico">
+              <div class="booking-screen__top">
+                <span>01 / 06</span>
+                <strong class="text-3d gold-depth">Servicos Invictus</strong>
+              </div>
+              <div class="booking-service-rail" data-service-options></div>
+            </section>
+
+            <section class="booking-screen" data-booking-stage="barber" aria-label="Escolher barbeiro">
+              <div class="booking-screen__top">
+                <span>02 / 06</span>
+                <strong class="text-3d gold-depth">Escolha o profissional</strong>
+              </div>
+              <div class="booking-barber-grid" data-barber-options></div>
+            </section>
+
+            <section class="booking-screen" data-booking-stage="date" aria-label="Escolher data">
+              <div class="booking-screen__top">
+                <span>03 / 06</span>
+                <strong class="text-3d gold-depth">Escolha a data</strong>
+              </div>
+              <label class="booking-date">
+                <span>Calendario Invictus</span>
+                <input name="date" type="hidden" data-booking-date required />
+              </label>
+              <div class="booking-calendar" data-booking-calendar></div>
+            </section>
+
+            <section class="booking-screen" data-booking-stage="time" aria-label="Escolher horario">
+              <div class="booking-screen__top">
+                <span>04 / 06</span>
+                <strong class="text-3d gold-depth">Horario disponivel</strong>
+              </div>
+              <div class="booking-timeline" data-slot-board>
+                <p>Escolha uma data para revelar os horarios.</p>
+              </div>
+            </section>
+
+            <section class="booking-screen" data-booking-stage="details" aria-label="Informar dados">
+              <div class="booking-screen__top">
+                <span>05 / 06</span>
+                <strong class="text-3d gold-depth">Seus dados</strong>
+              </div>
+              <div class="booking-fields">
+                <label class="booking-field">
+                  <span>Nome</span>
+                  <input name="clientName" type="text" placeholder="Seu nome" autocomplete="name" required />
+                </label>
+                <label class="booking-field">
+                  <span>WhatsApp</span>
+                  <input
+                    name="clientWhatsapp"
+                    type="tel"
+                    placeholder="(00) 00000-0000"
+                    autocomplete="tel"
+                    inputmode="tel"
+                    required
+                  />
+                </label>
+              </div>
+            </section>
+
+            <section class="booking-screen" data-booking-stage="confirm" aria-label="Confirmar agendamento">
+              <div class="booking-screen__top">
+                <span>06 / 06</span>
+                <strong class="text-3d gold-depth">Confirmacao</strong>
+              </div>
+              <div class="booking-confirm-card" data-booking-summary>
+                <span>Confirmacao</span>
+                <p>
+                  <strong data-summary-service>Servico</strong>
+                  <small><span data-summary-barber>Barbeiro</span> · <span data-summary-date>Data</span> · <span data-summary-time>Horario</span></small>
+                </p>
+              </div>
+              <button class="booking-final" type="submit" data-booking-submit>
+                Confirmar agendamento
+                <span aria-hidden="true">→</span>
+              </button>
+            </section>
+          </form>
+        </div>
+      </section>
+
+      <section class="section location" id="localizacao">
+        <div class="location-card reveal">
+          <div>
+            <p class="eyebrow">Localizacao</p>
+            <h2 class="text-3d title-depth">Invictus Barber Studio</h2>
+            <p>
+              Atendimento com hora marcada, ambiente reservado e experiencia
+              pensada do primeiro contato ao acabamento final.
+            </p>
+          </div>
+          <div class="location-card__actions">
+            <a class="btn btn--glass" href="https://wa.me/5500000000000" target="_blank" rel="noreferrer">
+              WhatsApp
+            </a>
+            <a class="btn btn--glass" href="https://maps.google.com" target="_blank" rel="noreferrer">
+              Ver no mapa
+            </a>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <a class="brand" href="#inicio" aria-label="Voltar ao inicio">
+        <span class="brand__mark">IB</span>
+        <span class="brand__text">
+          <strong class="text-3d gold-depth">Invictus</strong>
+          <small>Barber Studio</small>
+        </span>
+      </a>
+      <p>Luxury minimalism com precisao de barbearia real.</p>
+      <small>Invictus Barber. Todos os direitos reservados.</small>
+      <a class="ck-signature" href="https://instagram.com/codedby.ck" target="_blank" rel="noreferrer">
+        Coded by CK
+      </a>
+    </footer>
+
+    <script src="assets/js/storage.js" defer></script>
+    <script src="assets/js/booking.js" defer></script>
+    <script src="assets/js/app.js" defer></script>
+  </body>
+</html>
