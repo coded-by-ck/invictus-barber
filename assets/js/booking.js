@@ -18,7 +18,7 @@
     { name: "Selagem", price: "R$ 130,00", duration: "30 min", image: "assets/img/produtos-2.JPG", description: "Tratamento de alinhamento e acabamento dos fios." }
   ];
   const BARBERS = [
-    { name: "Pablo", specialty: "Especialista em degrade e acabamento", rating: "4.9", image: "assets/img/pablo.jpg" },
+    { name: "Pablo", specialty: "Especialista em degrade e acabamento", rating: "4.9", image: "assets/img/barbeiro-pablo.jpg" },
     { name: "Marco", specialty: "Master barber em corte e barba", rating: "4.9", image: "assets/img/marco.jpg" }
   ];
   const SERVICE_CATEGORIES = [

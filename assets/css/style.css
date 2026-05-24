@@ -400,7 +400,8 @@ main,
 .hero__content {
   position: relative;
   z-index: 6;
-  max-width: 520px;
+  max-width: 720px;
+  overflow: visible;
   padding-top: clamp(0px, 2svh, 10px);
 }
 
@@ -640,10 +641,10 @@ p {
 .hero-visual::before {
   z-index: 1;
   background:
-    linear-gradient(90deg, rgba(3, 3, 3, 0.99) 0%, rgba(3, 3, 3, 0.86) 16%, rgba(3, 3, 3, 0.54) 38%, rgba(3, 3, 3, 0.22) 62%, rgba(3, 3, 3, 0) 84%),
-    linear-gradient(180deg, rgba(3, 3, 3, 0.12), rgba(3, 3, 3, 0.82)),
-    radial-gradient(circle at 55% 33%, rgba(214, 180, 111, 0.058), transparent 12rem),
-    radial-gradient(ellipse at 58% 44%, transparent 28%, rgba(0, 0, 0, 0.24) 62%, rgba(0, 0, 0, 0.68) 100%);
+    linear-gradient(90deg, rgba(3, 3, 3, 0.98) 0%, rgba(3, 3, 3, 0.88) 20%, rgba(3, 3, 3, 0.42) 42%, rgba(3, 3, 3, 0.08) 62%, transparent 78%),
+    linear-gradient(180deg, rgba(3, 3, 3, 0.08), rgba(3, 3, 3, 0.78)),
+    radial-gradient(circle at 55% 33%, rgba(214, 180, 111, 0.055), transparent 13rem),
+    radial-gradient(ellipse at 58% 44%, transparent 28%, rgba(0, 0, 0, 0.18) 62%, rgba(0, 0, 0, 0.62) 100%);
 }
 
 .hero-visual::after {
@@ -663,13 +664,13 @@ p {
 .hero-visual:hover .hero-visual__slide.is-active {
   transform:
     translate3d(calc(var(--hero-drift-x, 0px) * 0.6), calc((var(--parallax-y, 0px) * -0.04) + (var(--hero-drift-y, 0px) * 0.6)), 0)
-    scale(1.045);
+    scale(0.96);
 }
 
 .hero-visual:hover .hero-visual__slide--scissors.is-active {
   transform:
     translate3d(calc(var(--hero-drift-x, 0px) * 0.6), calc((var(--parallax-y, 0px) * -0.04) + (var(--hero-drift-y, 0px) * 0.6)), 0)
-    scale(1.15);
+    scale(1.02);
 }
 
 .hero__actions {
@@ -1150,8 +1151,7 @@ p {
 }
 
 .media-card img,
-.gallery-item img,
-.barber-card img {
+.gallery-item img {
   position: absolute;
   inset: 0;
   width: 100%;
@@ -1186,8 +1186,7 @@ p {
 }
 
 .media-card:hover img,
-.gallery-item:hover img,
-.barber-card:hover img {
+.gallery-item:hover img {
   filter: brightness(0.56) saturate(0.84) contrast(1.16);
   transform: scale(1.045);
 }
@@ -1218,7 +1217,34 @@ p {
 }
 
 .barber-card {
-  min-height: clamp(540px, 62vw, 620px);
+  aspect-ratio: 4 / 5;
+  min-height: 0;
+  max-height: 620px;
+}
+
+.barber-card img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 38%;
+  filter: brightness(0.42) saturate(0.72) contrast(1.18);
+  transform: scale(1);
+  transition: transform 1.25s var(--ease-soft), filter 0.55s ease;
+}
+
+.barber-card:nth-child(1) img {
+  object-position: center 34%;
+}
+
+.barber-card:nth-child(2) img {
+  object-position: center 34%;
+}
+
+.barber-card:hover img {
+  filter: brightness(0.56) saturate(0.84) contrast(1.16);
+  transform: scale(1.025);
 }
 
 .barber-card div {
@@ -2182,7 +2208,7 @@ p {
   position: absolute;
   inset: 0;
   width: 100%;
-  height: 100%;
+  height: 1000px;
   object-fit: cover;
   filter: grayscale(0.18) saturate(0.74) contrast(1.15) brightness(0.62);
   transition: transform 0.85s var(--ease-soft), filter 0.38s ease;
@@ -5123,10 +5149,6 @@ p {
     grid-auto-rows: minmax(220px, 56vw);
   }
 
-  .barber-card {
-    min-height: min(520px, 118vw);
-  }
-
   .price-row {
     grid-template-columns: 1fr;
     gap: 8px;
@@ -5607,3 +5629,193 @@ p {
     animation: none;
   }
 }
+
+/* CK FIX — Hero blend + scissors position */
+@media (min-width: 1021px) {
+  .hero__overlay {
+    background:
+      linear-gradient(
+        90deg,
+        rgba(2, 2, 2, 0.98) 0%,
+        rgba(2, 2, 2, 0.90) 30%,
+        rgba(2, 2, 2, 0.62) 48%,
+        rgba(2, 2, 2, 0.30) 66%,
+        rgba(2, 2, 2, 0.62) 100%
+      ),
+      radial-gradient(
+        ellipse at 70% 44%,
+        transparent 0%,
+        rgba(2, 2, 2, 0.16) 58%,
+        rgba(2, 2, 2, 0.58) 100%
+      ),
+      linear-gradient(
+        180deg,
+        rgba(2, 2, 2, 0.04),
+        rgba(2, 2, 2, 0.92)
+      );
+  }
+
+  .hero-visual::before {
+    background:
+      linear-gradient(
+        90deg,
+        rgba(3, 3, 3, 0.98) 0%,
+        rgba(3, 3, 3, 0.72) 20%,
+        rgba(3, 3, 3, 0.36) 42%,
+        rgba(3, 3, 3, 0.12) 70%,
+        rgba(3, 3, 3, 0) 100%
+      ),
+      linear-gradient(
+        180deg,
+        rgba(3, 3, 3, 0.05),
+        rgba(3, 3, 3, 0.78)
+      ),
+      radial-gradient(
+        circle at 55% 33%,
+        rgba(214, 180, 111, 0.055),
+        transparent 13rem
+      );
+  }
+
+  .hero-visual__slide--scissors {
+    object-position: 50% 58%;
+  }
+}
+
+/* CK FIX — booking desktop vertical alignment */
+@media (min-width: 1021px) {
+  .section.booking {
+    padding-top: 28px !important;
+    padding-bottom: 48px !important;
+  }
+
+  .booking-experience,
+  .booking-experience--concierge {
+    align-items: flex-start !important;
+    min-height: 0 !important;
+    height: auto !important;
+    overflow: visible !important;
+  }
+
+  .booking-experience--concierge .booking-command,
+  .booking-command {
+    align-self: flex-start !important;
+    position: relative !important;
+    top: 0 !important;
+    margin-top: 0 !important;
+    transform: none !important;
+    min-height: 0 !important;
+    height: auto !important;
+    max-height: none !important;
+  }
+
+  .booking-flow {
+    align-self: flex-start !important;
+  }
+}
+
+/* CK FIX — Cards dos barbeiros dentro do agendamento */
+.booking-experience--concierge .barber-select {
+  min-height: 300px !important;
+}
+
+.booking-experience--concierge .barber-select img {
+  object-fit: cover !important;
+  transform: scale(1) !important;
+  opacity: 0.82 !important;
+  filter: grayscale(0.1) saturate(0.82) contrast(1.14) brightness(0.66) !important;
+}
+
+/* Pablo — primeiro card */
+.booking-experience--concierge .booking-barber-grid .barber-select:nth-child(1) img {
+  object-position: center 18% !important;
+}
+
+/* Marco — segundo card */
+.booking-experience--concierge .booking-barber-grid .barber-select:nth-child(2) img {
+  object-position: center 24% !important;
+}
+
+.booking-experience--concierge .barber-select:hover img,
+.booking-experience--concierge .barber-select.is-selected img {
+  transform: scale(1.025) !important;
+}
+
+/* CK FIX — Texto premium nos cards de barbeiro do agendamento */
+.booking-experience--concierge .barber-select span {
+  margin-top: auto !important;
+  margin-bottom: 4px !important;
+  color: var(--gold-bright) !important;
+  font-family: "Oswald", sans-serif !important;
+  font-size: clamp(1.35rem, 2vw, 1.85rem) !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.035em !important;
+  line-height: 0.95 !important;
+  text-transform: uppercase !important;
+  text-shadow:
+    0 1px 0 rgba(255, 246, 210, 0.22),
+    1px 2px 0 rgba(88, 57, 14, 0.55),
+    0 10px 24px rgba(0, 0, 0, 0.78),
+    0 0 18px rgba(214, 180, 111, 0.18) !important;
+}
+
+.booking-experience--concierge .barber-select small {
+  max-width: 24ch !important;
+  margin-bottom: 8px !important;
+  color: rgba(236, 232, 221, 0.72) !important;
+  font-size: 0.62rem !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.02em !important;
+  line-height: 1.35 !important;
+  text-shadow: 0 8px 18px rgba(0, 0, 0, 0.72) !important;
+}
+
+.booking-experience--concierge .barber-select .stars,
+.booking-experience--concierge .barber-select .rating,
+.booking-experience--concierge .barber-select [class*="star"],
+.booking-experience--concierge .barber-select [class*="rating"] {
+  color: var(--gold-bright) !important;
+  font-size: 0.72rem !important;
+  font-weight: 900 !important;
+  letter-spacing: 0.08em !important;
+  text-shadow:
+    0 0 12px rgba(214, 180, 111, 0.22),
+    0 8px 18px rgba(0, 0, 0, 0.75) !important;
+}
+
+/* CK FIX — Ajuste fino texto cards barbeiros agenda */
+.booking-experience--concierge .barber-select span {
+  font-size: clamp(1.05rem, 1.45vw, 1.42rem) !important;
+  line-height: 1 !important;
+  margin-bottom: 3px !important;
+  max-width: 12ch !important;
+}
+
+.booking-experience--concierge .barber-select small {
+  max-width: 18ch !important;
+  font-size: 0.56rem !important;
+  line-height: 1.25 !important;
+  opacity: 0.78 !important;
+}
+
+.booking-experience--concierge .barber-select {
+  padding: 18px !important;
+}
+
+.booking-experience--concierge .barber-select [class*="rating"],
+.booking-experience--concierge .barber-select [class*="star"] {
+  font-size: 0.62rem !important;
+}
+
+/* CK FIX — respiro final rating barbeiros agenda */
+.booking-experience--concierge .barber-select small {
+  margin-bottom: 10px !important;
+}
+
+.booking-experience--concierge .barber-select [class*="rating"],
+.booking-experience--concierge .barber-select [class*="star"] {
+  display: inline-block !important;
+  margin-top: 4px !important;
+}
+
+
