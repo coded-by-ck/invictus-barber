@@ -13,13 +13,21 @@ let particles = [];
 let particleFrame = null;
 let heroSlideIndex = 0;
 let heroSlideTimer = null;
+let loaderHideTimer = null;
 
-function hideLoader() {
-  window.setTimeout(() => {
+function hideLoader(delay = 3800, force = false) {
+  const timeout = Number.isFinite(delay) ? delay : 3800;
+
+  if (document.body.classList.contains("is-ready")) return;
+  if (loaderHideTimer && !force) return;
+  if (loaderHideTimer && force) window.clearTimeout(loaderHideTimer);
+
+  loaderHideTimer = window.setTimeout(() => {
     loader.classList.add("is-hidden");
     document.body.classList.remove("is-locked");
     document.body.classList.add("is-ready");
-  }, 700);
+    loaderHideTimer = null;
+  }, timeout);
 }
 
 function setHeaderState() {
@@ -236,9 +244,105 @@ function setupBookingForm() {
   });
 }
 
+function setupCkTransition() {
+  const signature = document.querySelector("[data-ck-signature]");
+  if (!signature) return;
+  let isTransitioning = false;
+
+  const codeTokens = [
+    ["const", "ck", "=", "{", "dev", ":", "true", "}", ";"],
+    ["async", "function", "launch", "(", ")", "{", "await", "render", "(", ")", "}"],
+    ["import", "{", "motion", "}", "from", "'@ck/core'", ";"],
+    ["const", "theme", "=", "'dracula'", ";"],
+    ["requestAnimationFrame", "(", "compose", ")", ";"],
+    ["export", "default", "signature", ";"],
+    ["window", ".", "open", "(", "instagram", ",", "'_blank'", ")", ";"],
+    ["if", "(", "brand", ".", "ready", ")", "{", "enter", "(", ")", "}"],
+    ["document", ".", "querySelector", "(", "'.invictus'", ")", ";"],
+    ["class", "Creator", "{", "constructor", "(", ")", "{", "super", "}", "}"]
+  ];
+
+  const draculaColors = [
+    "#bd93f9",
+    "#ff79c6",
+    "#8be9fd",
+    "#f8f8f2",
+    "#6272a4",
+    "#ffb86c",
+    "#ff5555"
+  ];
+
+  function createOverlay() {
+    const overlay = document.createElement("div");
+    overlay.className = "ck-transition-loader";
+    overlay.setAttribute("aria-hidden", "true");
+
+    const codeLayerBack = document.createElement("div");
+    codeLayerBack.className = "ck-transition-loader__code ck-transition-loader__code--back";
+
+    const codeLayerFront = document.createElement("div");
+    codeLayerFront.className = "ck-transition-loader__code ck-transition-loader__code--front";
+
+    Array.from({ length: 46 }).forEach((_, index) => {
+      const stream = document.createElement("span");
+      const tokens = codeTokens[index % codeTokens.length];
+
+      tokens.forEach((token, tokenIndex) => {
+        const item = document.createElement("b");
+        item.textContent = token;
+        item.style.setProperty("--token-delay", `${tokenIndex * 0.045}s`);
+        item.style.setProperty("--code-color", draculaColors[(index + tokenIndex) % draculaColors.length]);
+        stream.appendChild(item);
+      });
+
+      stream.style.setProperty("--x", `${4 + Math.random() * 92}%`);
+      stream.style.setProperty("--delay", `${Math.random() * 1.35}s`);
+      stream.style.setProperty("--duration", `${3.2 + Math.random() * 1.6}s`);
+      stream.style.setProperty("--depth", `${0.58 + Math.random() * 0.62}`);
+      (index % 4 === 0 ? codeLayerFront : codeLayerBack).appendChild(stream);
+    });
+
+    overlay.innerHTML = `
+      <div class="ck-transition-loader__aura"></div>
+      <figure class="ck-transition-loader__card">
+        <img src="assets/img/codedby.ck-img.jpg" alt="" />
+      </figure>
+      <div class="ck-transition-loader__copy">
+        <strong>CODED BY CK</strong>
+        <span>ENTERING DEV MODE</span>
+      </div>
+      <div class="ck-transition-loader__progress"></div>
+    `;
+
+    overlay.prepend(codeLayerBack);
+    overlay.appendChild(codeLayerFront);
+    document.body.appendChild(overlay);
+    return overlay;
+  }
+
+  signature.addEventListener("click", (event) => {
+    if (event.metaKey || event.ctrlKey || event.shiftKey || event.button === 1) return;
+    event.preventDefault();
+    if (isTransitioning) return;
+    isTransitioning = true;
+
+    const target = signature.href;
+    const overlay = createOverlay();
+
+    requestAnimationFrame(() => overlay.classList.add("is-active"));
+    window.setTimeout(() => overlay.classList.add("is-leaving"), prefersReducedMotion ? 800 : 3200);
+    window.setTimeout(() => {
+      const nextWindow = window.open(target, "_blank", "noopener,noreferrer");
+      if (!nextWindow) window.location.href = target;
+      overlay.remove();
+      isTransitioning = false;
+    }, prefersReducedMotion ? 1100 : 4050);
+  });
+}
+
 document.body.classList.add("is-locked");
-window.addEventListener("load", hideLoader);
-window.setTimeout(hideLoader, 2400);
+window.addEventListener("load", () => hideLoader());
+window.setTimeout(() => hideLoader(0, true), 4600);
 
 navToggle.addEventListener("click", toggleMenu);
 navMenu.querySelectorAll("a").forEach((link) => link.addEventListener("click", closeMenu));
@@ -256,6 +360,7 @@ setupTilt();
 setupHeroCarousel();
 setupHeroDepth();
 setupBookingForm();
+setupCkTransition();
 setHeaderState();
 resizeCanvas();
 
