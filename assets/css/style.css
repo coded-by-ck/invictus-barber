@@ -17,6 +17,16 @@
   --ease-soft: cubic-bezier(0.2, 0.8, 0.2, 1);
   --page-gutter: clamp(18px, 5.5vw, 78px);
   --section-y: clamp(64px, 7vw, 104px);
+  --depth-border: rgba(214, 180, 111, 0.24);
+  --depth-border-strong: rgba(214, 180, 111, 0.42);
+  --depth-glass: linear-gradient(145deg, rgba(255, 246, 210, 0.045), rgba(6, 7, 8, 0.72) 34%, rgba(0, 0, 0, 0.58));
+  --depth-shadow: 0 22px 64px rgba(0, 0, 0, 0.36), 0 0 38px rgba(214, 180, 111, 0.055), inset 0 1px 0 rgba(255, 246, 210, 0.075), inset 0 0 0 1px rgba(0, 0, 0, 0.62);
+  --depth-shadow-hover: 0 30px 86px rgba(0, 0, 0, 0.48), 0 0 56px rgba(214, 180, 111, 0.13), inset 0 1px 0 rgba(255, 246, 210, 0.13), inset 0 -18px 42px rgba(0, 0, 0, 0.32);
+  --depth-lift: translate3d(0, -4px, 0);
+  --depth-tilt-x: 0deg;
+  --depth-tilt-y: 0deg;
+  --depth-pointer-x: 50%;
+  --depth-pointer-y: 42%;
 }
 
 * {
@@ -600,7 +610,7 @@ p {
   filter: grayscale(0.1) saturate(0.76) sepia(0.045) contrast(1.18) brightness(0.54);
   transform:
     translate3d(calc(var(--hero-drift-x, 0px) * 0.35), calc((var(--parallax-y, 0px) * -0.04) + (var(--hero-drift-y, 0px) * 0.35)), 0)
-    scale(1.01);
+    scale(0.98);
   transition:
     opacity 3s var(--ease-soft),
     transform 13s ease,
@@ -612,7 +622,7 @@ p {
   opacity: 1;
   transform:
     translate3d(calc(var(--hero-drift-x, 0px) * 0.55), calc((var(--parallax-y, 0px) * -0.04) + (var(--hero-drift-y, 0px) * 0.55)), 0)
-    scale(1.035);
+    scale(1.04);
 }
 
 .hero-visual__slide--scissors {
@@ -620,14 +630,14 @@ p {
   filter: grayscale(0.08) saturate(0.74) sepia(0.18) hue-rotate(-8deg) contrast(1.34) brightness(0.38);
   transform:
     translate3d(calc(var(--hero-drift-x, 0px) * 0.35), calc((var(--parallax-y, 0px) * -0.04) + (var(--hero-drift-y, 0px) * 0.35)), 0)
-    scale(1.11);
+    scale(1.10);
 }
 
 .hero-visual__slide--scissors.is-active {
   filter: grayscale(0.08) saturate(0.76) sepia(0.2) hue-rotate(-8deg) contrast(1.38) brightness(0.4);
   transform:
     translate3d(calc(var(--hero-drift-x, 0px) * 0.55), calc((var(--parallax-y, 0px) * -0.04) + (var(--hero-drift-y, 0px) * 0.55)), 0)
-    scale(1.14);
+    scale(1.04);
 }
 
 .hero-visual::before,
@@ -894,39 +904,55 @@ p {
   padding: 13px 8px;
   overflow: hidden;
   text-align: center;
-  border-color: rgba(214, 180, 111, 0.095);
+  border-color: rgba(214, 180, 111, 0.14);
   border-radius: 5px;
-  background: linear-gradient(145deg, rgba(7, 7, 7, 0.74), rgba(2, 2, 2, 0.62));
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.035);
+  background:
+    linear-gradient(145deg, rgba(255, 244, 214, 0.035), transparent 34%, rgba(214, 180, 111, 0.045)),
+    linear-gradient(145deg, rgba(8, 8, 8, 0.82), rgba(2, 2, 2, 0.7));
+  box-shadow:
+    0 12px 32px rgba(0, 0, 0, 0.24),
+    inset 0 1px 0 rgba(255, 246, 210, 0.045),
+    inset 0 0 0 1px rgba(0, 0, 0, 0.38);
   transition:
-    transform 0.45s var(--ease),
-    border-color 0.45s ease,
-    background 0.45s ease,
-    box-shadow 0.45s ease;
+    transform 0.52s var(--ease-soft),
+    border-color 0.52s ease,
+    background 0.52s ease,
+    box-shadow 0.52s ease,
+    filter 0.52s ease;
 }
 
 .hero-service:hover {
-  border-color: rgba(214, 180, 111, 0.22);
-  background: linear-gradient(145deg, rgba(12, 12, 12, 0.78), rgba(3, 3, 3, 0.68));
+  border-color: rgba(214, 180, 111, 0.42);
+  background:
+    linear-gradient(145deg, rgba(255, 244, 214, 0.055), transparent 32%, rgba(214, 180, 111, 0.09)),
+    linear-gradient(145deg, rgba(13, 13, 13, 0.9), rgba(3, 3, 3, 0.78));
   box-shadow:
-    0 12px 34px rgba(0, 0, 0, 0.26),
-    inset 0 1px 0 rgba(255, 255, 255, 0.045),
-    0 0 18px rgba(214, 180, 111, 0.035);
+    0 18px 46px rgba(0, 0, 0, 0.36),
+    0 0 30px rgba(214, 180, 111, 0.085),
+    inset 0 1px 0 rgba(255, 246, 210, 0.075),
+    inset 0 -18px 42px rgba(0, 0, 0, 0.32);
+  filter: contrast(1.04);
 }
 
 .hero-service h3 {
-  max-width: 112px;
+  max-width: 148px;
   margin: 0 auto;
-  font-size: 0.56rem;
+  font-size: 0.54rem;
   font-weight: 900;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.11em;
+  line-height: 1.22;
   text-transform: uppercase;
-  transition: color 0.35s ease, transform 0.35s var(--ease);
+  transition: color 0.42s ease, transform 0.42s var(--ease-soft), text-shadow 0.42s ease, filter 0.42s ease;
 }
 
 .hero-service:hover h3 {
   color: rgba(236, 232, 221, 0.92);
-  transform: translateY(-1px);
+  filter: brightness(1.08);
+  text-shadow:
+    0 1px 0 rgba(255, 248, 218, 0.32),
+    0 8px 18px rgba(0, 0, 0, 0.72),
+    0 0 18px rgba(214, 180, 111, 0.2);
+  transform: translateY(-2px);
 }
 
 .hero-service p {
@@ -946,23 +972,59 @@ p {
   display: block;
   width: 36px;
   height: 36px;
-  border: 1px solid rgba(214, 180, 111, 0.18);
+  border: 1px solid rgba(214, 180, 111, 0.26);
   border-radius: 50%;
-  background: rgba(242, 208, 138, 0.05);
-  transition: border-color 0.35s ease, background 0.35s ease, transform 0.35s var(--ease);
+  background:
+    radial-gradient(circle at 50% 42%, rgba(214, 180, 111, 0.08), transparent 58%),
+    rgba(0, 0, 0, 0.28);
+  box-shadow:
+    inset 0 0 0 1px rgba(0, 0, 0, 0.42),
+    0 0 0 rgba(214, 180, 111, 0);
+  transition: border-color 0.42s ease, background 0.42s ease, transform 0.42s var(--ease-soft), box-shadow 0.42s ease;
 }
 
 .hero-service:hover .service-icon {
-  border-color: rgba(214, 180, 111, 0.34);
-  background: rgba(214, 180, 111, 0.075);
-  transform: translateY(-1px);
+  border-color: rgba(214, 180, 111, 0.58);
+  background:
+    radial-gradient(circle at 50% 42%, rgba(214, 180, 111, 0.18), transparent 62%),
+    rgba(0, 0, 0, 0.34);
+  box-shadow:
+    0 0 22px rgba(214, 180, 111, 0.12),
+    inset 0 1px 0 rgba(255, 246, 210, 0.12);
+  transform: translateY(-2px) scale(1.035);
 }
 
 .service-icon::before,
 .service-icon::after {
   position: absolute;
   content: "";
-  background: var(--gold-bright);
+  background: rgba(214, 180, 111, 0.92);
+  box-shadow: 0 0 10px rgba(214, 180, 111, 0.12);
+  transition: background 0.42s ease, box-shadow 0.42s ease, transform 0.42s var(--ease-soft);
+}
+
+.hero-service:hover .service-icon::before,
+.hero-service:hover .service-icon::after {
+  background: #f1d27f;
+  box-shadow: 0 0 14px rgba(214, 180, 111, 0.22);
+}
+
+.hero-service:hover .service-icon--blade::before {
+  transform: rotate(38deg) scaleY(1.08);
+}
+
+.hero-service:hover .service-icon--beard::before {
+  border-color: #f1d27f;
+  background: transparent;
+  box-shadow: 0 0 14px rgba(214, 180, 111, 0.16);
+}
+
+.hero-service:hover .service-icon--spark::before {
+  transform: scaleY(1.08);
+}
+
+.hero-service:hover .service-icon--spark::after {
+  transform: scaleX(1.08);
 }
 
 .service-icon--blade::before {
@@ -5261,7 +5323,7 @@ p {
   }
 
   .hero-service h3 {
-    max-width: 102px;
+    max-width: min(128px, 100%);
     font-size: 0.5rem;
     letter-spacing: 0.1em;
   }
@@ -5816,6 +5878,287 @@ p {
 .booking-experience--concierge .barber-select [class*="star"] {
   display: inline-block !important;
   margin-top: 4px !important;
+}
+
+/* Invictus 9D premium depth layer */
+body::after {
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  pointer-events: none;
+  content: "";
+  background:
+    radial-gradient(circle at 18% 18%, rgba(214, 180, 111, 0.055), transparent 24rem),
+    radial-gradient(circle at 78% 34%, rgba(255, 235, 176, 0.035), transparent 28rem),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.018), transparent 34%, rgba(0, 0, 0, 0.42));
+  opacity: 0.88;
+}
+
+.hero {
+  isolation: isolate;
+  perspective: 1200px;
+  box-shadow:
+    0 28px 90px rgba(0, 0, 0, 0.42),
+    0 0 0 1px rgba(255, 238, 190, 0.035),
+    inset 0 1px 0 rgba(255, 246, 210, 0.09),
+    inset 0 -42px 92px rgba(0, 0, 0, 0.42);
+}
+
+.hero::before,
+.hero::after {
+  position: absolute;
+  pointer-events: none;
+  content: "";
+}
+
+.hero::before {
+  inset: 0;
+  z-index: 2;
+  background:
+    radial-gradient(circle at var(--depth-pointer-x, 44%) var(--depth-pointer-y, 40%), rgba(214, 180, 111, 0.095), transparent 18rem),
+    linear-gradient(115deg, transparent 0%, transparent 42%, rgba(255, 238, 190, 0.055) 49%, transparent 58%, transparent 100%);
+  background-size: 100% 100%, 230% 100%;
+  background-position: center, -125% 0;
+  mix-blend-mode: screen;
+  opacity: 0.34;
+  animation: invictusDepthSweep 11s var(--ease-soft) infinite;
+}
+
+.hero::after {
+  inset: 8% 7% auto 7%;
+  z-index: 0;
+  height: 44%;
+  background:
+    radial-gradient(ellipse at 32% 44%, rgba(214, 180, 111, 0.15), transparent 42%),
+    radial-gradient(ellipse at 64% 36%, rgba(255, 238, 190, 0.07), transparent 48%);
+  filter: blur(34px);
+  opacity: 0.62;
+  transform:
+    translate3d(calc(var(--hero-drift-x, 0px) * -0.18), calc(var(--hero-drift-y, 0px) * -0.12), 0)
+    scale(1.02);
+}
+
+.hero__content {
+  transform:
+    translate3d(calc(var(--hero-drift-x, 0px) * -0.08), calc(var(--hero-drift-y, 0px) * -0.06), 0)
+    perspective(900px);
+  transition: transform 0.45s var(--ease-soft);
+}
+
+.hero h1::before {
+  position: absolute;
+  inset: -0.28em -0.22em -0.22em -0.12em;
+  z-index: -1;
+  pointer-events: none;
+  content: "";
+  background:
+    radial-gradient(ellipse at 28% 48%, rgba(214, 180, 111, 0.2), transparent 58%),
+    radial-gradient(ellipse at 62% 52%, rgba(255, 238, 190, 0.08), transparent 54%);
+  filter: blur(22px);
+  opacity: 0.72;
+  transform: translate3d(10px, 12px, -1px);
+}
+
+.hero-visual {
+  transform-style: preserve-3d;
+  filter: drop-shadow(0 34px 70px rgba(0, 0, 0, 0.46));
+}
+
+.hero-visual::after {
+  background-position:
+    calc(-140% + var(--hero-drift-x, 0px)) 0,
+    center,
+    center;
+}
+
+.hero-booking,
+.service-panel,
+.hero-service,
+.media-card,
+.barber-card,
+.gallery-item,
+.booking-panel,
+.location-card,
+.booking-experience--concierge .booking-command,
+.booking-experience--concierge .booking-screen.is-active,
+.booking-experience--concierge .cinema-service,
+.booking-experience--concierge .service-category,
+.booking-experience--concierge .service-category__panel .service-row,
+.booking-experience--concierge .barber-select,
+.booking-calendar,
+.booking-timeline,
+.booking-fields,
+.booking-confirm-card {
+  border-color: var(--depth-border) !important;
+  background: var(--depth-glass);
+  box-shadow: var(--depth-shadow) !important;
+  transform-style: preserve-3d;
+  transition:
+    transform 0.46s var(--ease-soft),
+    border-color 0.46s ease,
+    box-shadow 0.46s ease,
+    background 0.46s ease,
+    filter 0.46s ease;
+}
+
+.hero-booking::before,
+.service-panel::before,
+.hero-service::before,
+.media-card::before,
+.barber-card::before,
+.gallery-item::before,
+.booking-panel::before,
+.location-card::before,
+.booking-experience--concierge .booking-command::before,
+.booking-experience--concierge .booking-screen.is-active::before,
+.booking-experience--concierge .cinema-service::after,
+.booking-experience--concierge .service-category::after,
+.booking-experience--concierge .service-category__panel .service-row::after,
+.booking-experience--concierge .barber-select::after,
+.booking-calendar::before,
+.booking-timeline::before,
+.booking-fields::before,
+.booking-confirm-card::before {
+  background:
+    radial-gradient(circle at var(--depth-pointer-x, 50%) var(--depth-pointer-y, 36%), rgba(255, 238, 190, 0.09), transparent 12rem),
+    linear-gradient(135deg, rgba(255, 246, 210, 0.11), transparent 28%, rgba(214, 180, 111, 0.075)),
+    linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.026), transparent);
+}
+
+.hero-booking:hover,
+.service-panel:hover,
+.hero-service:hover,
+.media-card:hover,
+.barber-card:hover,
+.gallery-item:hover,
+.booking-panel:hover,
+.location-card:hover,
+.booking-experience--concierge .booking-command:hover,
+.booking-experience--concierge .booking-screen.is-active:hover,
+.booking-experience--concierge .cinema-service:hover,
+.booking-experience--concierge .cinema-service.is-selected,
+.booking-experience--concierge .service-category:hover,
+.booking-experience--concierge .service-category.is-open,
+.booking-experience--concierge .service-category.has-selected,
+.booking-experience--concierge .service-category__panel .service-row:hover,
+.booking-experience--concierge .service-category__panel .service-row.is-selected,
+.booking-experience--concierge .barber-select:hover,
+.booking-experience--concierge .barber-select.is-selected,
+.booking-calendar:hover,
+.booking-timeline:hover,
+.booking-fields:hover,
+.booking-confirm-card:hover {
+  border-color: var(--depth-border-strong) !important;
+  box-shadow: var(--depth-shadow-hover) !important;
+  filter: contrast(1.035) brightness(1.02);
+}
+
+.service-panel:hover,
+.booking-experience--concierge .service-category:hover,
+.booking-experience--concierge .service-category.has-selected,
+.booking-experience--concierge .service-category__panel .service-row:hover,
+.booking-experience--concierge .barber-select:hover,
+.booking-experience--concierge .timeline-slot:hover,
+.booking-experience--concierge .calendar-day:hover:not(:disabled) {
+  transform: var(--depth-lift);
+}
+
+.tilt-card:hover {
+  transform:
+    perspective(900px)
+    translate3d(0, -4px, 0)
+    rotateX(var(--depth-tilt-x))
+    rotateY(var(--depth-tilt-y));
+}
+
+.btn {
+  box-shadow:
+    0 14px 34px rgba(0, 0, 0, 0.3),
+    0 0 0 1px rgba(255, 246, 210, 0.035),
+    inset 0 1px 0 rgba(255, 246, 210, 0.12);
+}
+
+.btn::after {
+  position: absolute;
+  inset: 1px;
+  pointer-events: none;
+  content: "";
+  border-radius: inherit;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(255, 246, 210, 0.13), transparent 46%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.035), transparent 44%);
+  opacity: 0.62;
+}
+
+.btn:hover,
+.btn:focus-visible {
+  box-shadow:
+    0 18px 44px rgba(0, 0, 0, 0.38),
+    0 0 26px rgba(214, 180, 111, 0.12),
+    inset 0 1px 0 rgba(255, 246, 210, 0.18);
+}
+
+.btn:active {
+  transform: translate3d(0, 1px, 0) scale(0.992);
+  box-shadow:
+    0 8px 22px rgba(0, 0, 0, 0.34),
+    0 0 16px rgba(214, 180, 111, 0.08),
+    inset 0 2px 8px rgba(0, 0, 0, 0.28);
+}
+
+.booking-experience--concierge .timeline-slot,
+.booking-experience--concierge .calendar-day,
+.booking-date input,
+.booking-field input,
+.booking-fields input {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 246, 210, 0.06),
+    0 10px 24px rgba(0, 0, 0, 0.2);
+}
+
+.booking-experience--concierge .timeline-slot:hover,
+.booking-experience--concierge .timeline-slot.is-selected,
+.booking-experience--concierge .calendar-day:hover:not(:disabled),
+.booking-experience--concierge .calendar-day.is-selected {
+  box-shadow:
+    0 14px 34px rgba(0, 0, 0, 0.34),
+    0 0 22px rgba(214, 180, 111, 0.11),
+    inset 0 1px 0 rgba(255, 246, 210, 0.14);
+}
+
+@keyframes invictusDepthSweep {
+  0%,
+  24% {
+    background-position: center, -125% 0;
+    opacity: 0.26;
+  }
+  54% {
+    background-position: center, 42% 0;
+    opacity: 0.38;
+  }
+  82%,
+  100% {
+    background-position: center, 150% 0;
+    opacity: 0.24;
+  }
+}
+
+@media (prefers-reduced-motion: reduce), (hover: none), (pointer: coarse) {
+  .hero::before {
+    animation: none;
+  }
+
+  .hero__content,
+  .tilt-card:hover,
+  .service-panel:hover,
+  .booking-experience--concierge .service-category:hover,
+  .booking-experience--concierge .service-category.has-selected,
+  .booking-experience--concierge .service-category__panel .service-row:hover,
+  .booking-experience--concierge .barber-select:hover,
+  .booking-experience--concierge .timeline-slot:hover,
+  .booking-experience--concierge .calendar-day:hover:not(:disabled) {
+    transform: none;
+  }
 }
 
 

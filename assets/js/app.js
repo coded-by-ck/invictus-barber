@@ -93,14 +93,33 @@ function setupTilt() {
   if (prefersReducedMotion || prefersTouch) return;
 
   document.querySelectorAll(".tilt-card").forEach((card) => {
+    let frame = null;
+
     card.addEventListener("pointermove", (event) => {
-      const rect = card.getBoundingClientRect();
-      const x = (event.clientX - rect.left) / rect.width - 0.5;
-      const y = (event.clientY - rect.top) / rect.height - 0.5;
-      card.style.transform = `translateY(-2px) rotateX(${y * -1.1}deg) rotateY(${x * 1.4}deg)`;
+      if (frame) cancelAnimationFrame(frame);
+
+      frame = requestAnimationFrame(() => {
+        const rect = card.getBoundingClientRect();
+        const px = (event.clientX - rect.left) / rect.width;
+        const py = (event.clientY - rect.top) / rect.height;
+        const x = px - 0.5;
+        const y = py - 0.5;
+
+        card.style.setProperty("--depth-pointer-x", `${px * 100}%`);
+        card.style.setProperty("--depth-pointer-y", `${py * 100}%`);
+        card.style.setProperty("--depth-tilt-x", `${y * -2.2}deg`);
+        card.style.setProperty("--depth-tilt-y", `${x * 2.8}deg`);
+        card.style.transform = `perspective(900px) translate3d(0, -4px, 0) rotateX(${y * -2.2}deg) rotateY(${x * 2.8}deg)`;
+      });
     });
 
     card.addEventListener("pointerleave", () => {
+      if (frame) cancelAnimationFrame(frame);
+      frame = null;
+      card.style.removeProperty("--depth-pointer-x");
+      card.style.removeProperty("--depth-pointer-y");
+      card.style.removeProperty("--depth-tilt-x");
+      card.style.removeProperty("--depth-tilt-y");
       card.style.transform = "";
     });
   });
@@ -131,13 +150,17 @@ function setupHeroDepth() {
     const rect = hero.getBoundingClientRect();
     const x = (event.clientX - rect.left) / rect.width - 0.5;
     const y = (event.clientY - rect.top) / rect.height - 0.5;
-    hero.style.setProperty("--hero-drift-x", `${x * 10}px`);
-    hero.style.setProperty("--hero-drift-y", `${y * 7}px`);
+    hero.style.setProperty("--hero-drift-x", `${x * 12}px`);
+    hero.style.setProperty("--hero-drift-y", `${y * 8}px`);
+    hero.style.setProperty("--depth-pointer-x", `${(x + 0.5) * 100}%`);
+    hero.style.setProperty("--depth-pointer-y", `${(y + 0.5) * 100}%`);
   });
 
   hero.addEventListener("pointerleave", () => {
     hero.style.setProperty("--hero-drift-x", "0px");
     hero.style.setProperty("--hero-drift-y", "0px");
+    hero.style.removeProperty("--depth-pointer-x");
+    hero.style.removeProperty("--depth-pointer-y");
   });
 }
 
