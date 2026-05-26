@@ -14,6 +14,7 @@ let particleFrame = null;
 let heroSlideIndex = 0;
 let heroSlideTimer = null;
 let loaderHideTimer = null;
+let monkeyEggActive = false;
 
 function hideLoader(delay = 3800, force = false) {
   const timeout = Number.isFinite(delay) ? delay : 3800;
@@ -26,6 +27,7 @@ function hideLoader(delay = 3800, force = false) {
     loader.classList.add("is-hidden");
     document.body.classList.remove("is-locked");
     document.body.classList.add("is-ready");
+    window.dispatchEvent(new CustomEvent("invictus:loader-ready"));
     loaderHideTimer = null;
   }, timeout);
 }
@@ -249,17 +251,17 @@ function setupCkTransition() {
   if (!signature) return;
   let isTransitioning = false;
 
-  const codeTokens = [
-    ["const", "ck", "=", "{", "dev", ":", "true", "}", ";"],
-    ["async", "function", "launch", "(", ")", "{", "await", "render", "(", ")", "}"],
-    ["import", "{", "motion", "}", "from", "'@ck/core'", ";"],
-    ["const", "theme", "=", "'dracula'", ";"],
-    ["requestAnimationFrame", "(", "compose", ")", ";"],
-    ["export", "default", "signature", ";"],
-    ["window", ".", "open", "(", "instagram", ",", "'_blank'", ")", ";"],
-    ["if", "(", "brand", ".", "ready", ")", "{", "enter", "(", ")", "}"],
-    ["document", ".", "querySelector", "(", "'.invictus'", ")", ";"],
-    ["class", "Creator", "{", "constructor", "(", ")", "{", "super", "}", "}"]
+  const codeSnippets = [
+    ["const STORAGE_KEY = 'invictus_barber_bookings';", "const stored = localStorage.getItem(STORAGE_KEY);", "return stored ? JSON.parse(stored) : [];"],
+    ["async function saveBooking(booking) {", "  const bookings = await listBookings();", "  bookings.push(booking);", "}"],
+    ["window.localStorage.setItem(", "  STORAGE_KEY,", "  JSON.stringify(bookings)", ");"],
+    ["const storageAdapter = {", "  async listBookings() {", "    return JSON.parse(stored) || [];", "  }", "};"],
+    ["try {", "  const stored = localStorage.getItem(STORAGE_KEY);", "} catch (error) {", "  console.warn('Storage error', error);", "}"],
+    ["const booking = {", "  service: selectedService.name,", "  barber: selectedBarber.name,", "  date: selectedDate", "};"],
+    ["document.querySelector('[data-booking-app]');", "button.classList.add('is-selected');", "status.dataset.type = 'success';"],
+    ["function findBooking(predicate) {", "  return bookings.find(predicate) || null;", "}"],
+    ["const payload = encodeURIComponent(message);", "window.open(`https://wa.me/${phone}?text=${payload}`);"],
+    ["window.InvictusStorage = {", "  adapter: localStorageAdapter,", "  saveBooking(booking) {", "    return this.adapter.saveBooking(booking);", "  }", "};"]
   ];
 
   const draculaColors = [
@@ -283,29 +285,45 @@ function setupCkTransition() {
     const codeLayerFront = document.createElement("div");
     codeLayerFront.className = "ck-transition-loader__code ck-transition-loader__code--front";
 
-    Array.from({ length: 46 }).forEach((_, index) => {
+    Array.from({ length: prefersTouch ? 18 : 22 }).forEach((_, index) => {
       const stream = document.createElement("span");
-      const tokens = codeTokens[index % codeTokens.length];
+      const lines = codeSnippets[index % codeSnippets.length];
 
-      tokens.forEach((token, tokenIndex) => {
+      lines.join("\n").split("").slice(0, prefersTouch ? 58 : 68).forEach((char, charIndex) => {
         const item = document.createElement("b");
-        item.textContent = token;
-        item.style.setProperty("--token-delay", `${tokenIndex * 0.045}s`);
-        item.style.setProperty("--code-color", draculaColors[(index + tokenIndex) % draculaColors.length]);
+        item.textContent = char === " " ? "\u00a0" : char;
+        item.style.setProperty("--token-delay", `${charIndex * 0.026}s`);
+        item.style.setProperty("--code-color", draculaColors[(index + charIndex) % draculaColors.length]);
         stream.appendChild(item);
       });
 
-      stream.style.setProperty("--x", `${4 + Math.random() * 92}%`);
-      stream.style.setProperty("--delay", `${Math.random() * 1.35}s`);
-      stream.style.setProperty("--duration", `${3.2 + Math.random() * 1.6}s`);
-      stream.style.setProperty("--depth", `${0.58 + Math.random() * 0.62}`);
+      stream.style.setProperty("--x", `${8 + Math.random() * 84}%`);
+      stream.style.setProperty("--delay", `${Math.random() * 0.9}s`);
+      stream.style.setProperty("--duration", `${8.2 + Math.random() * 2.4}s`);
+      stream.style.setProperty("--depth", `${0.74 + Math.random() * 0.46}`);
+      stream.style.setProperty("--drift", `${-16 + Math.random() * 32}px`);
       (index % 4 === 0 ? codeLayerFront : codeLayerBack).appendChild(stream);
     });
 
+    const particles = document.createElement("div");
+    particles.className = "ck-transition-loader__particles";
+    Array.from({ length: prefersTouch ? 14 : 18 }).forEach((_, index) => {
+      const particle = document.createElement("span");
+      particle.style.setProperty("--x", `${Math.random() * 100}%`);
+      particle.style.setProperty("--y", `${Math.random() * 100}%`);
+      particle.style.setProperty("--size", `${2 + Math.random() * 4}px`);
+      particle.style.setProperty("--delay", `${Math.random() * 1.8}s`);
+      particle.style.setProperty("--duration", `${2.1 + Math.random() * 2.4}s`);
+      particle.style.setProperty("--particle-color", draculaColors[index % draculaColors.length]);
+      particles.appendChild(particle);
+    });
+
     overlay.innerHTML = `
+      <div class="ck-transition-loader__volumetric"></div>
       <div class="ck-transition-loader__aura"></div>
-      <figure class="ck-transition-loader__card">
-        <img src="assets/img/codedby.ck-img.jpg" alt="" />
+      <figure class="ck-transition-loader__entity">
+        <span class="ck-transition-loader__shadow"></span>
+        <img src="assets/img/codedby.ck-img.png" alt="" onerror="this.onerror=null; this.src='assets/img/codedby.ck-img.jpg';" />
       </figure>
       <div class="ck-transition-loader__copy">
         <strong>CODED BY CK</strong>
@@ -315,6 +333,7 @@ function setupCkTransition() {
     `;
 
     overlay.prepend(codeLayerBack);
+    overlay.appendChild(particles);
     overlay.appendChild(codeLayerFront);
     document.body.appendChild(overlay);
     return overlay;
@@ -330,14 +349,97 @@ function setupCkTransition() {
     const overlay = createOverlay();
 
     requestAnimationFrame(() => overlay.classList.add("is-active"));
-    window.setTimeout(() => overlay.classList.add("is-leaving"), prefersReducedMotion ? 800 : 3200);
+    window.setTimeout(() => overlay.classList.add("is-leaving"), prefersReducedMotion ? 800 : 7000);
     window.setTimeout(() => {
-      const nextWindow = window.open(target, "_blank", "noopener,noreferrer");
-      if (!nextWindow) window.location.href = target;
-      overlay.remove();
-      isTransitioning = false;
-    }, prefersReducedMotion ? 1100 : 4050);
+      window.location.assign(target);
+    }, prefersReducedMotion ? 1100 : 8200);
   });
+}
+
+function setupMonkeyEasterEgg() {
+  if (prefersReducedMotion) return;
+
+  const bookingApp = document.querySelector("[data-booking-app]");
+  const bookingSection = document.querySelector("#agenda");
+  const monkeys = [
+    { mood: "peek", flip: "1", scale: "1" },
+    { mood: "dash", flip: "-1", scale: "0.94" },
+    { mood: "hang", flip: "1", scale: "0.88" },
+    { mood: "flip", flip: "-1", scale: "1.04" }
+  ];
+  const positions = ["bottom-right", "bottom-left", "side-right", "near-footer"];
+  let monkeyIndex = 0;
+  let positionIndex = 0;
+
+  function elementInViewport(element, threshold = 0.18) {
+    if (!element) return false;
+    const rect = element.getBoundingClientRect();
+    const visibleY = Math.min(rect.bottom, window.innerHeight) - Math.max(rect.top, 0);
+    return visibleY > Math.min(rect.height, window.innerHeight) * threshold;
+  }
+
+  function bookingIsBusy() {
+    if (!bookingApp) return false;
+    const activeElement = document.activeElement;
+    const hasFocus = activeElement && bookingApp.contains(activeElement);
+    const hasSelection = Boolean(bookingApp.querySelector(".is-selected, .is-current"));
+    const hasTypedField = Array.from(bookingApp.querySelectorAll("input")).some((input) => input.value.trim());
+    return hasFocus || hasSelection || hasTypedField || elementInViewport(bookingSection, 0.24);
+  }
+
+  function cleanupMonkey(monkey) {
+    if (!monkey || !monkey.isConnected) return;
+    monkey.classList.add("is-leaving");
+    window.setTimeout(() => {
+      monkey.remove();
+      monkeyEggActive = false;
+    }, 640);
+  }
+
+  function showMonkey(force = false) {
+    if (monkeyEggActive || document.hidden || document.body.classList.contains("is-locked")) return;
+    if (!force && bookingIsBusy()) return;
+
+    monkeyEggActive = true;
+    const monkeyData = monkeys[monkeyIndex % monkeys.length];
+    const position = positions[positionIndex % positions.length];
+    monkeyIndex += 1;
+    positionIndex += 1;
+
+    const monkey = document.createElement("button");
+    monkey.className = `monkey-egg monkey-egg--${position} monkey-egg--${monkeyData.mood}`;
+    monkey.type = "button";
+    monkey.setAttribute("aria-label", "Easter egg Invictus");
+    monkey.style.setProperty("--monkey-flip", monkeyData.flip);
+    monkey.style.setProperty("--monkey-scale", monkeyData.scale);
+    monkey.innerHTML = `
+      <span class="monkey-egg__banana" aria-hidden="true">&#127820;</span>
+      <span class="monkey-egg__photo" aria-hidden="true"></span>
+      <span class="monkey-egg__spark" aria-hidden="true"></span>
+    `;
+
+    monkey.addEventListener("click", () => {
+      monkey.classList.add("has-banana");
+      window.setTimeout(() => cleanupMonkey(monkey), 1300);
+    }, { once: true });
+
+    document.body.appendChild(monkey);
+    requestAnimationFrame(() => monkey.classList.add("is-visible"));
+
+    const lifetime = 6000 + Math.random() * 2000;
+    window.setTimeout(() => cleanupMonkey(monkey), lifetime);
+  }
+
+  window.invictusMonkey = () => showMonkey(true);
+  window.addEventListener("invictus:loader-ready", () => {
+    window.setTimeout(() => showMonkey(true), 900);
+  }, { once: true });
+
+  if (document.body.classList.contains("is-ready")) {
+    window.setTimeout(() => showMonkey(true), 900);
+  }
+
+  window.setInterval(showMonkey, 60000);
 }
 
 document.body.classList.add("is-locked");
@@ -361,6 +463,7 @@ setupHeroCarousel();
 setupHeroDepth();
 setupBookingForm();
 setupCkTransition();
+setupMonkeyEasterEgg();
 setHeaderState();
 resizeCanvas();
 
