@@ -323,6 +323,7 @@ function setupCkTransition() {
   const signature = document.querySelector("[data-ck-signature]");
   if (!signature) return;
   let isTransitioning = false;
+  const compactQuery = window.matchMedia("(max-width: 720px)");
 
   const codeSnippets = [
     ["const STORAGE_KEY = 'invictus_barber_bookings';", "const stored = localStorage.getItem(STORAGE_KEY);", "return stored ? JSON.parse(stored) : [];"],
@@ -348,9 +349,15 @@ function setupCkTransition() {
   ];
 
   function createOverlay() {
+    const isCompact = compactQuery.matches || prefersTouch;
+    const totalDuration = prefersReducedMotion ? 900 : isCompact ? 2000 : 2600;
+    const leaveDelay = prefersReducedMotion ? 650 : isCompact ? 1580 : 2180;
     const overlay = document.createElement("div");
     overlay.className = "ck-transition-loader";
     overlay.setAttribute("aria-hidden", "true");
+    overlay.style.setProperty("--ck-duration", `${totalDuration}ms`);
+    overlay.style.setProperty("--ck-leave-duration", `${totalDuration - leaveDelay}ms`);
+    overlay.style.setProperty("--ck-progress-duration", `${Math.max(totalDuration - 160, 700)}ms`);
 
     const codeLayerBack = document.createElement("div");
     codeLayerBack.className = "ck-transition-loader__code ck-transition-loader__code--back";
@@ -358,26 +365,26 @@ function setupCkTransition() {
     const codeLayerFront = document.createElement("div");
     codeLayerFront.className = "ck-transition-loader__code ck-transition-loader__code--front";
 
-    const streamCount = prefersReducedMotion ? 8 : prefersTouch ? 14 : 24;
-    const particleCount = prefersReducedMotion ? 0 : prefersTouch ? 6 : 10;
+    const streamCount = prefersReducedMotion ? 6 : isCompact ? 10 : 18;
+    const particleCount = prefersReducedMotion ? 0 : isCompact ? 3 : 8;
 
     Array.from({ length: streamCount }).forEach((_, index) => {
       const stream = document.createElement("span");
       const lines = codeSnippets[index % codeSnippets.length];
 
-      lines.join("\n").split("").slice(0, prefersTouch ? 42 : 56).forEach((char, charIndex) => {
+      lines.join("\n").split("").slice(0, isCompact ? 32 : 52).forEach((char, charIndex) => {
         const item = document.createElement("b");
         item.textContent = char === " " ? "\u00a0" : char;
-        item.style.setProperty("--token-delay", `${charIndex * 0.018}s`);
+        item.style.setProperty("--token-delay", `${charIndex * (isCompact ? 0.014 : 0.018)}s`);
         item.style.setProperty("--code-color", draculaColors[(index + charIndex) % draculaColors.length]);
         stream.appendChild(item);
       });
 
       stream.style.setProperty("--x", `${8 + Math.random() * 84}%`);
-      stream.style.setProperty("--delay", `${Math.random() * 0.28}s`);
-      stream.style.setProperty("--duration", `${1.45 + Math.random() * 0.45}s`);
-      stream.style.setProperty("--depth", `${0.74 + Math.random() * 0.46}`);
-      stream.style.setProperty("--drift", `${-16 + Math.random() * 32}px`);
+      stream.style.setProperty("--delay", `${Math.random() * (isCompact ? 0.16 : 0.36)}s`);
+      stream.style.setProperty("--duration", `${(isCompact ? 1.45 : 2.05) + Math.random() * (isCompact ? 0.28 : 0.42)}s`);
+      stream.style.setProperty("--depth", `${(isCompact ? 0.66 : 0.72) + Math.random() * (isCompact ? 0.28 : 0.4)}`);
+      stream.style.setProperty("--drift", `${isCompact ? -8 + Math.random() * 16 : -14 + Math.random() * 28}px`);
       (index % 4 === 0 ? codeLayerFront : codeLayerBack).appendChild(stream);
     });
 
@@ -425,11 +432,14 @@ function setupCkTransition() {
     const overlay = createOverlay();
 
     requestAnimationFrame(() => overlay.classList.add("is-active"));
-    window.setTimeout(() => overlay.classList.add("is-leaving"), prefersReducedMotion ? 650 : 1600);
+    const isCompact = compactQuery.matches || prefersTouch;
+    const totalDuration = prefersReducedMotion ? 900 : isCompact ? 2000 : 2600;
+    const leaveDelay = prefersReducedMotion ? 650 : isCompact ? 1580 : 2180;
+    window.setTimeout(() => overlay.classList.add("is-leaving"), leaveDelay);
     window.setTimeout(() => {
       overlay.remove();
       window.location.assign(target);
-    }, prefersReducedMotion ? 900 : 2000);
+    }, totalDuration);
   });
 }
 
