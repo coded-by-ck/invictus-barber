@@ -455,6 +455,202 @@
     window.open(url, "_blank", "noopener");
   }
 
+  function escapeHtml(value) {
+    return String(value).replace(/[&<>"']/g, (char) => {
+      return {
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#039;"
+      }[char];
+    });
+  }
+
+  function playConfirmationTone() {
+    try {
+      const AudioContext = window.AudioContext || window.webkitAudioContext;
+      if (!AudioContext) return;
+      const audio = new AudioContext();
+      const gain = audio.createGain();
+      const tone = audio.createOscillator();
+      const shimmer = audio.createOscillator();
+
+      tone.type = "sine";
+      shimmer.type = "triangle";
+      tone.frequency.setValueAtTime(392, audio.currentTime);
+      tone.frequency.exponentialRampToValueAtTime(587.33, audio.currentTime + 0.28);
+      shimmer.frequency.setValueAtTime(1174.66, audio.currentTime);
+
+      gain.gain.setValueAtTime(0.0001, audio.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.045, audio.currentTime + 0.04);
+      gain.gain.exponentialRampToValueAtTime(0.0001, audio.currentTime + 0.72);
+
+      tone.connect(gain);
+      shimmer.connect(gain);
+      gain.connect(audio.destination);
+      tone.start();
+      shimmer.start(audio.currentTime + 0.08);
+      tone.stop(audio.currentTime + 0.72);
+      shimmer.stop(audio.currentTime + 0.48);
+      window.setTimeout(() => audio.close(), 900);
+    } catch (error) {
+      // Audio is optional; browsers may block it depending on user settings.
+    }
+  }
+
+  function showBookingConfirmation(booking) {
+    const existing = document.querySelector("[data-booking-confirmation]");
+    if (existing) existing.remove();
+
+    const overlay = document.createElement("div");
+    overlay.className = "booking-confirmation-cinema";
+    overlay.dataset.bookingConfirmation = "true";
+    overlay.innerHTML = `
+      <div class="booking-confirmation-cinema__particles" aria-hidden="true">
+        ${Array.from({ length: 18 }, (_, index) => `<span style="--particle-index:${index}; --particle-x:${8 + Math.random() * 84}%; --particle-y:${12 + Math.random() * 76}%; --particle-delay:${Math.random() * 1.4}s"></span>`).join("")}
+      </div>
+      <article class="booking-confirmation-card" role="dialog" aria-modal="true" aria-labelledby="booking-confirmation-title">
+        <span class="booking-confirmation-card__beam" aria-hidden="true"></span>
+        <div class="booking-confirmation-card__mark" aria-hidden="true">IB</div>
+        <p class="booking-confirmation-card__eyebrow">Reserva premium concluida</p>
+        <h2 id="booking-confirmation-title">Agendamento Confirmado</h2>
+        <p class="booking-confirmation-card__message">
+          Seu horario esta reservado. A Invictus Barber Studio estara pronta para elevar sua presenca.
+        </p>
+        <dl class="booking-confirmation-card__details">
+          <div>
+            <dt>Cliente</dt>
+            <dd>${escapeHtml(booking.clientName)}</dd>
+          </div>
+          <div>
+            <dt>Profissional</dt>
+            <dd>${escapeHtml(booking.barber)}</dd>
+          </div>
+          <div>
+            <dt>Data</dt>
+            <dd>${formatDate(booking.date)}</dd>
+          </div>
+          <div>
+            <dt>Horario</dt>
+            <dd>${escapeHtml(booking.time)}</dd>
+          </div>
+        </dl>
+        <a class="booking-confirmation-card__button" href="#inicio" data-confirmation-home>
+          Voltar ao inicio
+        </a>
+      </article>
+    `;
+
+    const card = overlay.querySelector(".booking-confirmation-card");
+    const homeButton = overlay.querySelector("[data-confirmation-home]");
+    let frame = null;
+
+    function updateParallax(event) {
+      if (frame) cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(() => {
+        const rect = card.getBoundingClientRect();
+        const x = (event.clientX - rect.left) / rect.width - 0.5;
+        const y = (event.clientY - rect.top) / rect.height - 0.5;
+        card.style.setProperty("--confirmation-x", `${(x + 0.5) * 100}%`);
+        card.style.setProperty("--confirmation-y", `${(y + 0.5) * 100}%`);
+        card.style.setProperty("--confirmation-tilt-x", `${y * -5}deg`);
+        card.style.setProperty("--confirmation-tilt-y", `${x * 7}deg`);
+      });
+    }
+
+    function closeConfirmation() {
+      overlay.classList.add("is-leaving");
+      window.setTimeout(() => {
+        overlay.remove();
+        document.body.classList.remove("has-booking-confirmation");
+      }, 680);
+    }
+
+    overlay.addEventListener("pointermove", updateParallax);
+    overlay.addEventListener("pointerleave", () => {
+      card.style.removeProperty("--confirmation-x");
+      card.style.removeProperty("--confirmation-y");
+      card.style.removeProperty("--confirmation-tilt-x");
+      card.style.removeProperty("--confirmation-tilt-y");
+    });
+
+    homeButton.addEventListener("click", () => {
+      closeConfirmation();
+    });
+
+    document.body.appendChild(overlay);
+    document.body.classList.add("has-booking-confirmation");
+    window.setTimeout(() => overlay.classList.add("is-visible"), 20);
+    playConfirmationTone();
+  }
+
+  window.invictusConfirmacao = () => showBookingConfirmation({
+    clientName: "Cliente Invictus",
+    barber: "Pablo",
+    date: toDateInputValue(new Date()),
+    time: "19:00"
+  });
+
+  function setupPremiumBookingInteractions(app) {
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reduceMotion) return;
+
+    const interactiveSelector = [
+      ".barber-select",
+      ".timeline-slot",
+      ".calendar-day",
+      ".booking-final",
+      ".service-row",
+      ".service-category",
+      ".booking-confirm-card"
+    ].join(",");
+    let activeItem = null;
+    let frame = null;
+
+    function clearActiveItem() {
+      if (!activeItem) return;
+      activeItem.style.removeProperty("--booking-pointer-x");
+      activeItem.style.removeProperty("--booking-pointer-y");
+      activeItem.style.removeProperty("--booking-tilt-x");
+      activeItem.style.removeProperty("--booking-tilt-y");
+      activeItem = null;
+    }
+
+    app.addEventListener("pointermove", (event) => {
+      const item = event.target.closest(interactiveSelector);
+      if (!item || !app.contains(item) || item.disabled) {
+        clearActiveItem();
+        return;
+      }
+
+      if (activeItem && activeItem !== item) clearActiveItem();
+      activeItem = item;
+      if (frame) cancelAnimationFrame(frame);
+
+      frame = requestAnimationFrame(() => {
+        const rect = item.getBoundingClientRect();
+        const px = (event.clientX - rect.left) / rect.width;
+        const py = (event.clientY - rect.top) / rect.height;
+        const x = px - 0.5;
+        const y = py - 0.5;
+
+        item.style.setProperty("--booking-pointer-x", `${px * 100}%`);
+        item.style.setProperty("--booking-pointer-y", `${py * 100}%`);
+        item.style.setProperty("--booking-tilt-x", `${y * -4}deg`);
+        item.style.setProperty("--booking-tilt-y", `${x * 5}deg`);
+      });
+    });
+
+    app.addEventListener("pointerleave", clearActiveItem);
+    app.addEventListener("pointerdown", (event) => {
+      const item = event.target.closest(interactiveSelector);
+      if (!item || !app.contains(item) || item.disabled) return;
+      item.classList.add("is-pressing");
+      window.setTimeout(() => item.classList.remove("is-pressing"), 260);
+    });
+  }
+
   async function setupBooking() {
     const app = document.querySelector("[data-booking-app]");
     if (!app || !window.InvictusStorage) return;
@@ -468,6 +664,7 @@
     renderChoices(app);
     renderCalendar(app);
     renderSlots(app);
+    setupPremiumBookingInteractions(app);
     setStep(app, "service");
     updateSummary(app);
 
@@ -591,7 +788,6 @@
 
       setLoading(submitButton, true);
       setStatus(app, "Confirmando sua reserva premium...", "info");
-      const whatsappWindow = window.open("about:blank", "_blank");
 
       window.setTimeout(async () => {
         const booking = {
@@ -604,9 +800,9 @@
         await window.InvictusStorage.saveBooking(booking);
         state.bookings = await window.InvictusStorage.listBookings();
         setLoading(submitButton, false);
-        setStatus(app, "Agendamento confirmado. Abrindo WhatsApp com os detalhes.", "success");
+        setStatus(app, "Agendamento confirmado. Sua experiencia Invictus foi reservada.", "success");
         renderSlots(app);
-        openWhatsapp(booking, whatsappWindow);
+        showBookingConfirmation(booking);
       }, 650);
     });
   }

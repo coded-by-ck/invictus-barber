@@ -174,6 +174,79 @@ function setupHeroDepth() {
   });
 }
 
+function setupPremiumMouseInteractions() {
+  if (prefersReducedMotion || prefersTouch) return;
+
+  const reactiveSelector = [
+    ".hero",
+    ".footer",
+    ".media-card",
+    ".barber-card",
+    ".gallery-item",
+    ".hero-service",
+    ".service-panel",
+    ".location-card",
+    ".booking-experience--concierge .booking-command",
+    ".booking-experience--concierge .booking-screen",
+    ".booking-experience--concierge .barber-select",
+    ".booking-experience--concierge .service-category",
+    ".booking-experience--concierge .booking-confirm-card"
+  ].join(",");
+  const magneticSelector = ".btn, .nav-cta, .footer__social, .ck-signature, .booking-final";
+  let frame = null;
+  let activeReactive = null;
+  let activeMagnetic = null;
+
+  function clearReactive() {
+    if (!activeReactive) return;
+    activeReactive.style.removeProperty("--premium-pointer-x");
+    activeReactive.style.removeProperty("--premium-pointer-y");
+    activeReactive = null;
+  }
+
+  function clearMagnetic() {
+    if (!activeMagnetic) return;
+    activeMagnetic.style.removeProperty("--magnet-x");
+    activeMagnetic.style.removeProperty("--magnet-y");
+    activeMagnetic = null;
+  }
+
+  document.addEventListener("pointermove", (event) => {
+    const reactive = event.target.closest(reactiveSelector);
+    const magnetic = event.target.closest(magneticSelector);
+
+    if (!reactive) clearReactive();
+    if (!magnetic) clearMagnetic();
+    if (!reactive && !magnetic) return;
+
+    if (frame) cancelAnimationFrame(frame);
+    frame = requestAnimationFrame(() => {
+      if (reactive) {
+        activeReactive = reactive;
+        const rect = reactive.getBoundingClientRect();
+        const px = ((event.clientX - rect.left) / rect.width) * 100;
+        const py = ((event.clientY - rect.top) / rect.height) * 100;
+        reactive.style.setProperty("--premium-pointer-x", `${Math.max(0, Math.min(100, px))}%`);
+        reactive.style.setProperty("--premium-pointer-y", `${Math.max(0, Math.min(100, py))}%`);
+      }
+
+      if (magnetic && !magnetic.disabled) {
+        activeMagnetic = magnetic;
+        const rect = magnetic.getBoundingClientRect();
+        const x = (event.clientX - rect.left) / rect.width - 0.5;
+        const y = (event.clientY - rect.top) / rect.height - 0.5;
+        magnetic.style.setProperty("--magnet-x", `${x * 5}px`);
+        magnetic.style.setProperty("--magnet-y", `${y * 4}px`);
+      }
+    });
+  });
+
+  document.addEventListener("pointerleave", () => {
+    clearReactive();
+    clearMagnetic();
+  });
+}
+
 function resizeCanvas() {
   const ratio = window.devicePixelRatio || 1;
   canvas.width = window.innerWidth * ratio;
@@ -461,6 +534,7 @@ setupSlots();
 setupTilt();
 setupHeroCarousel();
 setupHeroDepth();
+setupPremiumMouseInteractions();
 setupBookingForm();
 setupCkTransition();
 setupMonkeyEasterEgg();
