@@ -358,21 +358,24 @@ function setupCkTransition() {
     const codeLayerFront = document.createElement("div");
     codeLayerFront.className = "ck-transition-loader__code ck-transition-loader__code--front";
 
-    Array.from({ length: prefersTouch ? 18 : 22 }).forEach((_, index) => {
+    const streamCount = prefersReducedMotion ? 8 : prefersTouch ? 14 : 24;
+    const particleCount = prefersReducedMotion ? 0 : prefersTouch ? 6 : 10;
+
+    Array.from({ length: streamCount }).forEach((_, index) => {
       const stream = document.createElement("span");
       const lines = codeSnippets[index % codeSnippets.length];
 
-      lines.join("\n").split("").slice(0, prefersTouch ? 58 : 68).forEach((char, charIndex) => {
+      lines.join("\n").split("").slice(0, prefersTouch ? 42 : 56).forEach((char, charIndex) => {
         const item = document.createElement("b");
         item.textContent = char === " " ? "\u00a0" : char;
-        item.style.setProperty("--token-delay", `${charIndex * 0.026}s`);
+        item.style.setProperty("--token-delay", `${charIndex * 0.018}s`);
         item.style.setProperty("--code-color", draculaColors[(index + charIndex) % draculaColors.length]);
         stream.appendChild(item);
       });
 
       stream.style.setProperty("--x", `${8 + Math.random() * 84}%`);
-      stream.style.setProperty("--delay", `${Math.random() * 0.9}s`);
-      stream.style.setProperty("--duration", `${8.2 + Math.random() * 2.4}s`);
+      stream.style.setProperty("--delay", `${Math.random() * 0.28}s`);
+      stream.style.setProperty("--duration", `${1.45 + Math.random() * 0.45}s`);
       stream.style.setProperty("--depth", `${0.74 + Math.random() * 0.46}`);
       stream.style.setProperty("--drift", `${-16 + Math.random() * 32}px`);
       (index % 4 === 0 ? codeLayerFront : codeLayerBack).appendChild(stream);
@@ -380,7 +383,7 @@ function setupCkTransition() {
 
     const particles = document.createElement("div");
     particles.className = "ck-transition-loader__particles";
-    Array.from({ length: prefersTouch ? 14 : 18 }).forEach((_, index) => {
+    Array.from({ length: particleCount }).forEach((_, index) => {
       const particle = document.createElement("span");
       particle.style.setProperty("--x", `${Math.random() * 100}%`);
       particle.style.setProperty("--y", `${Math.random() * 100}%`);
@@ -422,10 +425,11 @@ function setupCkTransition() {
     const overlay = createOverlay();
 
     requestAnimationFrame(() => overlay.classList.add("is-active"));
-    window.setTimeout(() => overlay.classList.add("is-leaving"), prefersReducedMotion ? 800 : 7000);
+    window.setTimeout(() => overlay.classList.add("is-leaving"), prefersReducedMotion ? 650 : 1600);
     window.setTimeout(() => {
+      overlay.remove();
       window.location.assign(target);
-    }, prefersReducedMotion ? 1100 : 8200);
+    }, prefersReducedMotion ? 900 : 2000);
   });
 }
 

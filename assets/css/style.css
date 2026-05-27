@@ -5532,7 +5532,7 @@ p {
   display: grid;
   place-items: center;
   align-content: center;
-  padding-top: clamp(36px, 7vh, 88px);
+  padding-top: clamp(10px, 3vh, 34px);
   overflow: hidden;
   color: rgba(248, 248, 242, 0.9);
   background:
@@ -5549,12 +5549,12 @@ p {
 
 .ck-transition-loader.is-active {
   opacity: 1;
-  animation: ckTransitionCamera 8.2s var(--ease-soft) forwards;
+  animation: ckTransitionCamera 2s var(--ease-soft) forwards;
 }
 
 .ck-transition-loader.is-leaving {
   opacity: 1;
-  filter: blur(8px) brightness(0.7);
+  filter: blur(6px) brightness(0.72);
   background:
     radial-gradient(circle at 50% 44%, rgba(189, 147, 249, 0.08), transparent 16rem),
     radial-gradient(circle at 48% 54%, rgba(139, 233, 253, 0.05), transparent 20rem),
@@ -5585,7 +5585,7 @@ p {
     radial-gradient(ellipse at 50% 45%, transparent 0%, transparent 38%, rgba(0, 0, 0, 0.64) 80%, rgba(0, 0, 0, 0.92) 100%),
     linear-gradient(112deg, transparent 0%, transparent 40%, rgba(248, 248, 242, 0.1) 48%, transparent 58%, transparent 100%);
   background-size: 100% 100%, 220% 100%;
-  animation: ckTransitionSweep 2.2s var(--ease-soft) both;
+  animation: ckTransitionSweep 1.65s var(--ease-soft) both;
   mix-blend-mode: screen;
   opacity: 0.42;
   transition: opacity 0.7s ease, background 0.7s ease;
@@ -5614,7 +5614,7 @@ p {
   mix-blend-mode: screen;
   opacity: 0;
   transform: translate(-50%, -50%) scale(0.72) rotateX(58deg);
-  animation: ckTransitionVolumetric 2.4s var(--ease-soft) 0.08s forwards;
+  animation: ckTransitionVolumetric 1.2s var(--ease-soft) 0.04s forwards;
 }
 
 .ck-transition-loader__aura {
@@ -5632,14 +5632,14 @@ p {
   filter: blur(18px) saturate(1.08);
   opacity: 0;
   transform: translate(-50%, -43%) scale(0.78) rotate(-5deg);
-  animation: ckTransitionAura 2.1s var(--ease-soft) forwards;
+  animation: ckTransitionAura 1.15s var(--ease-soft) forwards;
   transition: opacity 0.68s ease, transform 0.68s var(--ease-soft), filter 0.68s ease;
 }
 
 .ck-transition-loader__entity {
   position: relative;
   z-index: 4;
-  width: min(560px, 82vw);
+  width: min(440px, 76vw);
   margin: 0;
   display: grid;
   place-items: center;
@@ -5648,10 +5648,10 @@ p {
   filter:
     drop-shadow(0 26px 34px rgba(0, 0, 0, 0.56))
     drop-shadow(0 0 26px rgba(189, 147, 249, 0.2));
-  transform: translate3d(0, 54px, 80px) rotateX(5deg) scale(0.88);
+  transform: translate3d(0, 14px, 80px) rotateX(5deg) scale(0.9);
   animation:
-    ckTransitionEntityIn 1.35s var(--ease-soft) 0.08s forwards,
-    ckTransitionEntityFloat 2.8s ease-in-out 1.2s infinite;
+    ckTransitionEntityIn 0.72s var(--ease-soft) 0.06s forwards,
+    ckTransitionEntityFloat 1.6s ease-in-out 0.75s infinite;
   transition: opacity 0.68s ease, transform 0.68s var(--ease-soft), filter 0.68s ease;
 }
 
@@ -5671,7 +5671,7 @@ p {
   background-size: 230% 100%, 100% 8px;
   mix-blend-mode: screen;
   opacity: 0.38;
-  animation: ckTransitionEntitySweep 2.4s var(--ease-soft) 0.25s both;
+  animation: ckTransitionEntitySweep 1.35s var(--ease-soft) 0.18s both;
 }
 
 .ck-transition-loader__entity::after {
@@ -5681,7 +5681,7 @@ p {
   mix-blend-mode: screen;
   opacity: 0;
   clip-path: polygon(0 19%, 100% 16%, 100% 27%, 0 30%);
-  animation: ckTransitionGlitch 2.1s steps(1, end) 0.55s infinite;
+  animation: ckTransitionGlitch 1.35s steps(1, end) 0.42s infinite;
 }
 
 .ck-transition-loader__shadow {
@@ -5702,7 +5702,7 @@ p {
   position: relative;
   z-index: 1;
   width: 100%;
-  max-height: min(520px, 62vh);
+  max-height: min(390px, 56vh);
   object-fit: contain;
   object-position: 50% 50%;
   filter:
@@ -5714,7 +5714,7 @@ p {
   -webkit-mask-image: radial-gradient(ellipse at 50% 50%, black 0 58%, rgba(0, 0, 0, 0.86) 68%, transparent 84%);
   mask-image: radial-gradient(ellipse at 50% 50%, black 0 58%, rgba(0, 0, 0, 0.86) 68%, transparent 84%);
   transform: translateZ(70px) scale(1.03);
-  animation: ckTransitionImage 3.8s var(--ease-soft) forwards;
+  animation: ckTransitionImage 1.8s var(--ease-soft) forwards;
 }
 
 .ck-transition-loader__particles {
@@ -5744,11 +5744,11 @@ p {
   z-index: 4;
   display: grid;
   gap: 7px;
-  margin-top: clamp(22px, 4vh, 44px);
+  margin-top: clamp(12px, 2.4vh, 24px);
   text-align: center;
   opacity: 0;
   transform: translateY(12px);
-  animation: ckTransitionCopy 1.2s var(--ease-soft) 0.35s forwards;
+  animation: ckTransitionCopy 0.62s var(--ease-soft) 0.22s forwards;
   transition: opacity 0.6s ease, transform 0.6s var(--ease-soft), filter 0.6s ease;
 }
 
@@ -5787,7 +5787,7 @@ p {
   box-shadow: 0 0 22px rgba(189, 147, 249, 0.28);
   transform: scaleX(0);
   transform-origin: left;
-  animation: ckTransitionProgress 7.8s var(--ease-soft) forwards;
+  animation: ckTransitionProgress 1.85s var(--ease-soft) forwards;
 }
 
 .ck-transition-loader__code {
@@ -5863,7 +5863,7 @@ p {
 
 @media (max-width: 720px) {
   .ck-transition-loader {
-    padding-top: clamp(18px, 5vh, 42px);
+    padding-top: clamp(8px, 3vh, 24px);
   }
 
   .ck-transition-loader__volumetric {
@@ -5877,8 +5877,8 @@ p {
   }
 
   .ck-transition-loader__entity {
-    width: min(430px, 94vw);
-    transform: translate3d(0, 42px, 80px) rotateX(5deg) scale(0.88);
+    width: min(360px, 88vw);
+    transform: translate3d(0, 12px, 80px) rotateX(5deg) scale(0.9);
     animation:
       ckTransitionEntityInMobile 1.35s var(--ease-soft) 0.08s forwards,
       ckTransitionEntityFloatMobile 2.8s ease-in-out 1.2s infinite;
@@ -5984,17 +5984,17 @@ p {
 @keyframes ckTransitionEntityInMobile {
   to {
     opacity: 1;
-    transform: translate3d(0, 34px, 80px) rotateX(0deg) scale(1);
+    transform: translate3d(0, 8px, 80px) rotateX(0deg) scale(1);
   }
 }
 
 @keyframes ckTransitionEntityFloatMobile {
   0%,
   100% {
-    transform: translate3d(0, 34px, 80px) rotateX(0deg) scale(1);
+    transform: translate3d(0, 8px, 80px) rotateX(0deg) scale(1);
   }
   50% {
-    transform: translate3d(0, 26px, 92px) rotateX(1deg) scale(1.012);
+    transform: translate3d(0, 1px, 92px) rotateX(1deg) scale(1.012);
   }
 }
 
@@ -6037,17 +6037,17 @@ p {
 @keyframes ckTransitionEntityIn {
   to {
     opacity: 1;
-    transform: translate3d(0, 44px, 80px) rotateX(0deg) scale(1);
+    transform: translate3d(0, 0, 80px) rotateX(0deg) scale(1);
   }
 }
 
 @keyframes ckTransitionEntityFloat {
   0%,
   100% {
-    transform: translate3d(0, 44px, 80px) rotateX(0deg) scale(1);
+    transform: translate3d(0, 0, 80px) rotateX(0deg) scale(1);
   }
   50% {
-    transform: translate3d(0, 34px, 92px) rotateX(1deg) scale(1.012);
+    transform: translate3d(0, -7px, 92px) rotateX(1deg) scale(1.012);
   }
 }
 
