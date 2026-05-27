@@ -1,0 +1,581 @@
+.ck-transition-loader {
+  --ease-soft: cubic-bezier(0.2, 0.8, 0.2, 1);
+  position: fixed;
+  inset: 0;
+  z-index: 220;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  padding-top: clamp(10px, 3vh, 34px);
+  overflow: hidden;
+  color: rgba(248, 248, 242, 0.9);
+  background:
+    radial-gradient(circle at 50% 44%, rgba(189, 147, 249, 0.2), transparent 18rem),
+    radial-gradient(circle at 50% 58%, rgba(139, 233, 253, 0.11), transparent 24rem),
+    radial-gradient(circle at 26% 74%, rgba(139, 233, 253, 0.08), transparent 22rem),
+    radial-gradient(circle at 76% 22%, rgba(255, 121, 198, 0.12), transparent 21rem),
+    linear-gradient(180deg, #050507 0%, #020204 76%);
+  opacity: 0;
+  pointer-events: none;
+  perspective: 980px;
+  transition: opacity 0.34s ease, background var(--ck-leave-duration, 420ms) ease;
+}
+
+.ck-transition-loader.is-active {
+  opacity: 1;
+  animation: ckTransitionCamera var(--ck-duration, 2600ms) var(--ease-soft) forwards;
+}
+
+.ck-transition-loader.is-leaving {
+  opacity: 1;
+  background:
+    radial-gradient(circle at 50% 44%, rgba(189, 147, 249, 0.08), transparent 16rem),
+    radial-gradient(circle at 48% 54%, rgba(139, 233, 253, 0.05), transparent 20rem),
+    linear-gradient(180deg, #030304 0%, #000 82%);
+}
+
+.ck-transition-loader::before,
+.ck-transition-loader::after {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  content: "";
+}
+
+.ck-transition-loader::before {
+  background:
+    linear-gradient(90deg, rgba(139, 233, 253, 0.055) 1px, transparent 1px),
+    linear-gradient(180deg, rgba(189, 147, 249, 0.045) 1px, transparent 1px),
+    repeating-linear-gradient(180deg, rgba(248, 248, 242, 0.035) 0 1px, transparent 1px 8px);
+  background-size: 118px 118px, 118px 118px, 100% 8px;
+  mask-image: radial-gradient(circle at 50% 48%, black, transparent 74%);
+  opacity: 0.26;
+}
+
+.ck-transition-loader::after {
+  background:
+    radial-gradient(ellipse at 50% 45%, transparent 0%, transparent 38%, rgba(0, 0, 0, 0.64) 80%, rgba(0, 0, 0, 0.92) 100%),
+    linear-gradient(112deg, transparent 0%, transparent 40%, rgba(248, 248, 242, 0.1) 48%, transparent 58%, transparent 100%);
+  background-size: 100% 100%, 220% 100%;
+  animation: ckTransitionSweep 1.65s var(--ease-soft) both;
+  mix-blend-mode: screen;
+  opacity: 0.42;
+  transition: opacity var(--ck-leave-duration, 420ms) ease, background var(--ck-leave-duration, 420ms) ease;
+}
+
+.ck-transition-loader.is-leaving::after {
+  background:
+    radial-gradient(ellipse at 50% 48%, rgba(248, 248, 242, 0.08), transparent 28%, rgba(0, 0, 0, 0.72) 70%, #000 100%),
+    linear-gradient(180deg, rgba(0, 0, 0, 0.08), rgba(0, 0, 0, 0.92));
+  opacity: 0.92;
+}
+
+.ck-transition-loader__volumetric {
+  position: absolute;
+  inset: 50% auto auto 50%;
+  z-index: 2;
+  width: min(620px, 92vw);
+  height: min(680px, 78vh);
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse at 50% 42%, rgba(248, 248, 242, 0.18), transparent 12%),
+    radial-gradient(ellipse at 48% 38%, rgba(139, 233, 253, 0.25), transparent 28%),
+    radial-gradient(ellipse at 52% 46%, rgba(189, 147, 249, 0.32), transparent 46%),
+    conic-gradient(from 170deg at 50% 40%, transparent, rgba(139, 233, 253, 0.22), transparent 28%, rgba(255, 121, 198, 0.14), transparent 60%);
+  filter: blur(16px) saturate(1.12);
+  mix-blend-mode: screen;
+  opacity: 0;
+  transform: translate(-50%, -50%) scale(0.72) rotateX(58deg);
+  animation: ckTransitionVolumetric 1.35s var(--ease-soft) 0.04s forwards;
+}
+
+.ck-transition-loader__aura {
+  position: absolute;
+  inset: 50% auto auto 50%;
+  width: min(760px, 84vw);
+  height: min(470px, 50vh);
+  border: 0;
+  border-radius: 46%;
+  background:
+    radial-gradient(ellipse at 50% 35%, rgba(139, 233, 253, 0.16), transparent 42%),
+    radial-gradient(ellipse at 50% 62%, rgba(189, 147, 249, 0.16), transparent 58%),
+    linear-gradient(90deg, transparent, rgba(255, 121, 198, 0.06), transparent);
+  box-shadow: none;
+  filter: blur(18px) saturate(1.08);
+  opacity: 0;
+  transform: translate(-50%, -43%) scale(0.78) rotate(-5deg);
+  animation: ckTransitionAura 1.15s var(--ease-soft) forwards;
+  transition: opacity var(--ck-leave-duration, 420ms) ease, transform var(--ck-leave-duration, 420ms) var(--ease-soft);
+}
+
+.ck-transition-loader__entity {
+  position: relative;
+  z-index: 4;
+  width: min(440px, 76vw);
+  margin: 0;
+  display: grid;
+  place-items: center;
+  transform-style: preserve-3d;
+  opacity: 0;
+  filter:
+    drop-shadow(0 26px 34px rgba(0, 0, 0, 0.56))
+    drop-shadow(0 0 26px rgba(189, 147, 249, 0.2));
+  transform: translate3d(0, 14px, 80px) rotateX(5deg) scale(0.9);
+  animation:
+    ckTransitionEntityIn 0.82s var(--ease-soft) 0.06s forwards,
+    ckTransitionEntityFloat 2.4s ease-in-out 0.85s infinite;
+  transition: opacity var(--ck-leave-duration, 420ms) ease, transform var(--ck-leave-duration, 420ms) var(--ease-soft);
+}
+
+.ck-transition-loader__entity::before,
+.ck-transition-loader__entity::after {
+  position: absolute;
+  inset: -2% -7%;
+  z-index: 2;
+  pointer-events: none;
+  content: "";
+}
+
+.ck-transition-loader__entity::before {
+  background:
+    linear-gradient(110deg, transparent 0%, transparent 38%, rgba(248, 248, 242, 0.14) 48%, transparent 58%, transparent 100%),
+    repeating-linear-gradient(180deg, rgba(139, 233, 253, 0.05) 0 1px, transparent 1px 7px);
+  background-size: 230% 100%, 100% 8px;
+  mix-blend-mode: screen;
+  opacity: 0.38;
+  animation: ckTransitionEntitySweep 1.35s var(--ease-soft) 0.18s both;
+}
+
+.ck-transition-loader__entity::after {
+  background:
+    linear-gradient(90deg, transparent, rgba(255, 121, 198, 0.28), transparent),
+    linear-gradient(180deg, transparent 0%, rgba(139, 233, 253, 0.08) 48%, transparent 100%);
+  mix-blend-mode: screen;
+  opacity: 0;
+  clip-path: polygon(0 19%, 100% 16%, 100% 27%, 0 30%);
+  animation: ckTransitionGlitch 1.35s steps(1, end) 0.42s infinite;
+}
+
+.ck-transition-loader__shadow {
+  position: absolute;
+  left: 50%;
+  bottom: 1%;
+  z-index: -1;
+  width: 64%;
+  height: 28px;
+  pointer-events: none;
+  background: radial-gradient(ellipse at center, rgba(139, 233, 253, 0.24), rgba(189, 147, 249, 0.13) 35%, transparent 72%);
+  filter: blur(14px);
+  opacity: 0.86;
+  transform: translateX(-50%);
+}
+
+.ck-transition-loader__entity img {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-height: min(390px, 56vh);
+  object-fit: contain;
+  object-position: 50% 50%;
+  filter:
+    saturate(1.16)
+    contrast(1.18)
+    brightness(0.78)
+    drop-shadow(0 0 18px rgba(139, 233, 253, 0.12));
+  mix-blend-mode: normal;
+  -webkit-mask-image: radial-gradient(ellipse at 50% 50%, black 0 58%, rgba(0, 0, 0, 0.86) 68%, transparent 84%);
+  mask-image: radial-gradient(ellipse at 50% 50%, black 0 58%, rgba(0, 0, 0, 0.86) 68%, transparent 84%);
+  transform: translateZ(70px) scale(1.03);
+  animation: ckTransitionImage 2.2s var(--ease-soft) forwards;
+}
+
+.ck-transition-loader__particles {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.ck-transition-loader__particles span {
+  position: absolute;
+  top: var(--y);
+  left: var(--x);
+  width: var(--size);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: var(--particle-color);
+  box-shadow: 0 0 10px var(--particle-color);
+  opacity: 0;
+  transform: translate3d(-50%, -50%, 0) scale(0.6);
+  animation: ckParticleOrbit var(--duration) ease-in-out var(--delay) infinite;
+}
+
+.ck-transition-loader__copy {
+  position: relative;
+  z-index: 4;
+  display: grid;
+  gap: 7px;
+  margin-top: clamp(12px, 2.4vh, 24px);
+  text-align: center;
+  opacity: 0;
+  transform: translateY(12px);
+  animation: ckTransitionCopy 0.72s var(--ease-soft) 0.22s forwards;
+  transition: opacity var(--ck-leave-duration, 420ms) ease, transform var(--ck-leave-duration, 420ms) var(--ease-soft);
+}
+
+.ck-transition-loader__copy strong {
+  color: #f8f8f2;
+  font-family: "Oswald", sans-serif;
+  font-size: clamp(1rem, 3.2vw, 1.7rem);
+  letter-spacing: 0.1em;
+  text-shadow: 0 0 24px rgba(189, 147, 249, 0.28), 0 12px 28px rgba(0, 0, 0, 0.78);
+}
+
+.ck-transition-loader__copy span {
+  color: rgba(139, 233, 253, 0.82);
+  font-size: 0.62rem;
+  font-weight: 900;
+  letter-spacing: 0.28em;
+}
+
+.ck-transition-loader__progress {
+  position: relative;
+  z-index: 4;
+  width: min(300px, 68vw);
+  height: 1px;
+  margin-top: 20px;
+  overflow: hidden;
+  background: rgba(248, 248, 242, 0.13);
+  box-shadow: 0 0 18px rgba(139, 233, 253, 0.12);
+}
+
+.ck-transition-loader__progress::before {
+  display: block;
+  width: 100%;
+  height: 100%;
+  content: "";
+  background: linear-gradient(90deg, #bd93f9, #ff79c6, #8be9fd, #f8f8f2);
+  box-shadow: 0 0 22px rgba(189, 147, 249, 0.28);
+  transform: scaleX(0);
+  transform-origin: left;
+  animation: ckTransitionProgress var(--ck-progress-duration, 2440ms) var(--ease-soft) forwards;
+}
+
+.ck-transition-loader__code {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  overflow: hidden;
+  font-family: "Inter", ui-monospace, SFMono-Regular, Consolas, monospace;
+}
+
+.ck-transition-loader__code span {
+  position: absolute;
+  top: -8%;
+  left: var(--x);
+  display: grid;
+  gap: 3px;
+  justify-items: center;
+  color: rgba(248, 248, 242, 0.48);
+  font-size: calc(0.76rem * var(--depth));
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  text-align: center;
+  text-shadow: 0 0 18px rgba(189, 147, 249, 0.34);
+  opacity: 0;
+  transform: translate3d(-50%, -10%, 0) scale(var(--depth));
+  animation: ckCodeFall var(--duration) linear var(--delay) forwards;
+}
+
+.ck-transition-loader__code span b {
+  display: block;
+  width: 1.35ch;
+  min-height: 1em;
+  max-width: 1.35ch;
+  overflow: hidden;
+  color: var(--code-color);
+  font-weight: 650;
+  opacity: 0.9;
+  text-align: center;
+  text-overflow: clip;
+  text-shadow:
+    0 0 8px color-mix(in srgb, var(--code-color), transparent 70%),
+    0 10px 22px rgba(0, 0, 0, 0.52);
+  transform: translateY(0);
+  transform-origin: top center;
+  animation:
+    ckTokenWrite 0.26s steps(2, end) var(--token-delay) both;
+}
+
+.ck-transition-loader__code--front {
+  z-index: 6;
+  opacity: 0.92;
+  mix-blend-mode: screen;
+}
+
+.ck-transition-loader__code--front span {
+  color: rgba(139, 233, 253, 0.54);
+}
+
+.ck-transition-loader.is-leaving .ck-transition-loader__aura,
+.ck-transition-loader.is-leaving .ck-transition-loader__volumetric,
+.ck-transition-loader.is-leaving .ck-transition-loader__entity,
+.ck-transition-loader.is-leaving .ck-transition-loader__copy,
+.ck-transition-loader.is-leaving .ck-transition-loader__progress,
+.ck-transition-loader.is-leaving .ck-transition-loader__code,
+.ck-transition-loader.is-leaving .ck-transition-loader__particles {
+  opacity: 0;
+  transform: translateY(14px) scale(0.96);
+}
+
+@media (max-width: 720px) {
+  .ck-transition-loader {
+    padding-top: clamp(8px, 3vh, 24px);
+    background:
+      radial-gradient(circle at 50% 44%, rgba(189, 147, 249, 0.12), transparent 14rem),
+      radial-gradient(circle at 50% 58%, rgba(139, 233, 253, 0.06), transparent 18rem),
+      linear-gradient(180deg, #050507 0%, #020204 76%);
+    perspective: 760px;
+  }
+
+  .ck-transition-loader__volumetric {
+    width: min(520px, 112vw);
+    height: min(560px, 70vh);
+    opacity: 0;
+    filter: none;
+    background:
+      radial-gradient(ellipse at 48% 38%, rgba(139, 233, 253, 0.11), transparent 30%),
+      radial-gradient(ellipse at 52% 46%, rgba(189, 147, 249, 0.14), transparent 48%);
+  }
+
+  .ck-transition-loader__aura {
+    width: min(540px, 112vw);
+    height: min(390px, 48vh);
+    filter: none;
+    background:
+      radial-gradient(ellipse at 50% 38%, rgba(139, 233, 253, 0.08), transparent 42%),
+      radial-gradient(ellipse at 50% 62%, rgba(189, 147, 249, 0.1), transparent 58%);
+  }
+
+  .ck-transition-loader__entity {
+    width: min(360px, 88vw);
+    filter: none;
+    transform: translate3d(0, 12px, 80px) rotateX(5deg) scale(0.9);
+    animation:
+      ckTransitionEntityInMobile 0.86s var(--ease-soft) 0.08s forwards,
+      ckTransitionEntityFloatMobile 2.4s ease-in-out 0.95s infinite;
+  }
+
+  .ck-transition-loader__entity::before {
+    opacity: 0.22;
+    animation-duration: 1.05s;
+  }
+
+  .ck-transition-loader__entity::after {
+    display: none;
+  }
+
+  .ck-transition-loader__shadow {
+    filter: none;
+    opacity: 0.42;
+  }
+
+  .ck-transition-loader__entity img {
+    max-height: min(430px, 58vh);
+    filter: saturate(1.04) contrast(1.08) brightness(0.82);
+  }
+
+  .ck-transition-loader__copy {
+    margin-top: clamp(18px, 3vh, 34px);
+  }
+
+  .ck-transition-loader__copy strong {
+    font-size: clamp(1rem, 6vw, 1.45rem);
+  }
+
+  .ck-transition-loader__copy span {
+    font-size: 0.58rem;
+    letter-spacing: 0.22em;
+  }
+
+  .ck-transition-loader__progress {
+    width: min(260px, 64vw);
+    margin-top: 18px;
+  }
+
+  .ck-transition-loader__code span {
+    font-size: calc(0.68rem * var(--depth));
+    text-shadow: none;
+  }
+
+  .ck-transition-loader__code span b {
+    text-shadow: none;
+  }
+
+  .ck-transition-loader__particles span {
+    box-shadow: none;
+  }
+}
+
+@keyframes ckTransitionEntityInMobile {
+  to {
+    opacity: 1;
+    transform: translate3d(0, 8px, 80px) rotateX(0deg) scale(1);
+  }
+}
+
+@keyframes ckTransitionEntityFloatMobile {
+  0%,
+  100% {
+    transform: translate3d(0, 8px, 80px) rotateX(0deg) scale(1);
+  }
+  50% {
+    transform: translate3d(0, 1px, 92px) rotateX(1deg) scale(1.012);
+  }
+}
+
+@keyframes ckTransitionSweep {
+  from {
+    background-position: center, -120% 0;
+  }
+  to {
+    background-position: center, 130% 0;
+  }
+}
+
+@keyframes ckTransitionCamera {
+  0% {
+    transform: scale(1);
+  }
+  100% {
+    transform: scale(1.035);
+  }
+}
+
+@keyframes ckTransitionAura {
+  to {
+    opacity: 0.66;
+    transform: translate(-50%, -43%) scale(1.04) rotate(5deg);
+  }
+}
+
+@keyframes ckTransitionVolumetric {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.72) rotateX(58deg);
+  }
+  100% {
+    opacity: 0.78;
+    transform: translate(-50%, -50%) scale(1.05) rotateX(58deg);
+  }
+}
+
+@keyframes ckTransitionEntityIn {
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 80px) rotateX(0deg) scale(1);
+  }
+}
+
+@keyframes ckTransitionEntityFloat {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 80px) rotateX(0deg) scale(1);
+  }
+  50% {
+    transform: translate3d(0, -7px, 92px) rotateX(1deg) scale(1.012);
+  }
+}
+
+@keyframes ckTransitionEntitySweep {
+  from {
+    background-position: -120% 0, center;
+  }
+  to {
+    background-position: 130% 0, center;
+  }
+}
+
+@keyframes ckTransitionGlitch {
+  0%,
+  67%,
+  100% {
+    opacity: 0;
+    transform: translateX(0);
+  }
+  68% {
+    opacity: 0.58;
+    transform: translateX(-9px);
+  }
+  70% {
+    opacity: 0.34;
+    transform: translateX(7px);
+  }
+  72% {
+    opacity: 0;
+    transform: translateX(0);
+  }
+}
+
+@keyframes ckTransitionImage {
+  to {
+    transform: translateZ(92px) scale(1.08);
+  }
+}
+
+@keyframes ckTransitionCopy {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes ckTransitionProgress {
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@keyframes ckCodeFall {
+  0% {
+    opacity: 0;
+    transform: translate3d(-50%, -10%, 0) scale(var(--depth));
+  }
+  8%,
+  86% {
+    opacity: 0.82;
+  }
+  100% {
+    opacity: 0;
+    transform: translate3d(calc(-50% + var(--drift)), 118vh, 0) scale(var(--depth));
+  }
+}
+
+@keyframes ckParticleOrbit {
+  0%,
+  100% {
+    opacity: 0;
+    transform: translate3d(-50%, -50%, 0) scale(0.35);
+  }
+  24%,
+  72% {
+    opacity: 0.72;
+  }
+  50% {
+    transform: translate3d(calc(-50% + 24px), calc(-50% - 38px), 0) scale(1);
+  }
+}
+
+@keyframes ckTokenWrite {
+  0% {
+    opacity: 0;
+    transform: translateY(-6px) scaleY(0.18);
+  }
+  100% {
+    opacity: 0.9;
+    transform: translateY(0) scaleY(1);
+  }
+}
