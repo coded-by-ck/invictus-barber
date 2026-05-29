@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Invictus Barber | Login do Barbeiro</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Oswald:wght@600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #070707;
+        --panel: rgba(18, 18, 18, 0.76);
+        --panel-strong: rgba(26, 24, 20, 0.92);
+        --gold: #d7b46a;
+        --gold-soft: rgba(215, 180, 106, 0.22);
+        --text: #f5f1e8;
+        --muted: #aaa39a;
+        --line: rgba(215, 180, 106, 0.2);
+        --danger: #ff7a7a;
+        --success: #8ee0a1;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        min-height: 100vh;
+        margin: 0;
+        display: grid;
+        place-items: center;
+        padding: 24px;
+        background:
+          radial-gradient(circle at 22% 18%, rgba(215, 180, 106, 0.16), transparent 34%),
+          linear-gradient(145deg, #030303 0%, #11100e 52%, #050505 100%);
+        color: var(--text);
+        font-family: Inter, system-ui, sans-serif;
+      }
+
+      .login-shell {
+        width: min(440px, 100%);
+        border: 1px solid var(--line);
+        background: linear-gradient(160deg, var(--panel), var(--panel-strong));
+        box-shadow: 0 30px 90px rgba(0, 0, 0, 0.48);
+        backdrop-filter: blur(18px);
+        padding: 32px;
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        margin-bottom: 34px;
+      }
+
+      .brand__mark {
+        width: 48px;
+        height: 48px;
+        display: grid;
+        place-items: center;
+        border: 1px solid var(--line);
+        color: var(--gold);
+        font-family: Oswald, sans-serif;
+        font-size: 22px;
+        font-weight: 700;
+      }
+
+      .brand strong {
+        display: block;
+        font-family: Oswald, sans-serif;
+        font-size: 22px;
+        letter-spacing: 0;
+        text-transform: uppercase;
+      }
+
+      .brand small,
+      p {
+        color: var(--muted);
+      }
+
+      h1 {
+        margin: 0 0 8px;
+        font-family: Oswald, sans-serif;
+        font-size: clamp(32px, 8vw, 48px);
+        line-height: 0.96;
+        letter-spacing: 0;
+      }
+
+      form {
+        display: grid;
+        gap: 16px;
+        margin-top: 28px;
+      }
+
+      label {
+        display: grid;
+        gap: 8px;
+        color: var(--muted);
+        font-size: 13px;
+        font-weight: 700;
+        text-transform: uppercase;
+      }
+
+      input {
+        width: 100%;
+        border: 1px solid var(--line);
+        background: rgba(0, 0, 0, 0.3);
+        color: var(--text);
+        padding: 15px 16px;
+        font: inherit;
+        outline: none;
+      }
+
+      input:focus {
+        border-color: var(--gold);
+        box-shadow: 0 0 0 4px var(--gold-soft);
+      }
+
+      button {
+        border: 0;
+        background: linear-gradient(135deg, #f0d28a, #a77a2f);
+        color: #130f09;
+        padding: 15px 18px;
+        font: inherit;
+        font-weight: 900;
+        cursor: pointer;
+        text-transform: uppercase;
+      }
+
+      button:disabled {
+        cursor: wait;
+        opacity: 0.7;
+      }
+
+      [data-login-status] {
+        min-height: 22px;
+        margin-top: 16px;
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      [data-login-status][data-type="error"] {
+        color: var(--danger);
+      }
+
+      [data-login-status][data-type="success"] {
+        color: var(--success);
+      }
+    </style>
+  </head>
+  <body>
+    <main class="login-shell">
+      <a class="brand" href="../index.html" aria-label="Invictus Barber">
+        <span class="brand__mark">IB</span>
+        <span>
+          <strong>Invictus</strong>
+          <small>Barber Studio</small>
+        </span>
+      </a>
+
+      <h1>Painel do barbeiro</h1>
+      <p>Acesse com o email e senha cadastrados no Firebase Auth.</p>
+
+      <form data-admin-login novalidate>
+        <label>
+          Email
+          <input name="email" type="email" autocomplete="email" required />
+        </label>
+        <label>
+          Senha
+          <input name="password" type="password" autocomplete="current-password" required />
+        </label>
+        <button type="submit" data-login-submit>Entrar</button>
+      </form>
+
+      <div data-login-status role="status" aria-live="polite"></div>
+    </main>
+
+    <script type="module" src="../assets/js/admin-auth.js"></script>
+  </body>
+</html>

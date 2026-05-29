@@ -18,8 +18,8 @@
     { name: "Selagem", price: "R$ 130,00", duration: "30 min", image: "assets/img/produtos-2.JPG", description: "Tratamento de alinhamento e acabamento dos fios." }
   ];
   const BARBERS = [
-    { name: "Pablo", specialty: "Especialista em degrade e acabamento", rating: "4.9", image: "assets/img/barbeiro-pablo.jpg" },
-    { name: "Marco", specialty: "Master barber em corte e barba", rating: "4.9", image: "assets/img/marco.jpg" }
+    { id: "pablo", name: "Pablo", specialty: "Especialista em degrade e acabamento", rating: "4.9", image: "assets/img/barbeiro-pablo.jpg" },
+    { id: "marco", name: "Marco", specialty: "Master barber em corte e barba", rating: "4.9", image: "assets/img/marco.jpg" }
   ];
   const SERVICE_CATEGORIES = [
     { name: "Cortes", icon: "01", services: ["Corte"] },
@@ -73,6 +73,7 @@
     time: "",
     step: "service",
     bookings: [],
+    availabilityRequestId: 0,
     activeCategory: "Cortes",
     calendarMonth: new Date()
   };
@@ -136,8 +137,74 @@
     return `${hour}:${minute}`;
   }
 
+  function timeToMinutes(value) {
+    const [hour, minute] = String(value || "00:00").split(":").map(Number);
+    return (hour * 60) + (minute || 0);
+  }
+
+  function getServiceDuration(serviceName) {
+    const service = getServiceByName(serviceName);
+    const match = service ? String(service.duration).match(/\d+/) : null;
+    return match ? Number(match[0]) : SLOT_INTERVAL_MINUTES;
+  }
+
+  function getSelectedServiceDuration() {
+    return getServiceDuration(state.service);
+  }
+
+  function getEndTime(startTime, duration) {
+    return minutesToTime(timeToMinutes(startTime) + duration);
+  }
+
   function getServiceByName(name) {
     return SERVICES.find((service) => service.name === name);
+  }
+
+  function getBarberByName(name) {
+    return BARBERS.find((barber) => barber.name === name);
+  }
+
+  function getBarberIdByName(name) {
+    const barber = getBarberByName(name);
+    return barber ? barber.id : String(name || "").trim().toLowerCase();
+  }
+
+  function getAvailabilityFilters(dateValue = state.date, barberName = state.barber) {
+    return {
+      barberId: getBarberIdByName(barberName),
+      date: dateValue,
+      status: "confirmed"
+    };
+  }
+
+  async function syncBookingsForSelectedSlot(app, options = {}) {
+    if (!state.barber || !state.date) {
+      state.bookings = [];
+      return [];
+    }
+
+    const requestId = (state.availabilityRequestId || 0) + 1;
+    state.availabilityRequestId = requestId;
+
+    if (!options.silent) {
+      setStatus(app, "Sincronizando horarios disponiveis...", "info");
+    }
+
+    // Sincronizacao dos horarios: sempre que barbeiro/data mudam,
+    // a agenda local recebe somente reservas confirmadas daquele barbeiro e dia.
+    const bookings = await window.InvictusStorage.listBookings(getAvailabilityFilters());
+
+    if (requestId !== state.availabilityRequestId) {
+      return state.bookings;
+    }
+
+    state.bookings = bookings;
+
+    if (state.time && hasTimeConflict(state.date, state.time, getBarberIdByName(state.barber), getSelectedServiceDuration())) {
+      state.time = "";
+    }
+
+    return state.bookings;
   }
 
   function getCategoryForService(serviceName) {
@@ -175,15 +242,43 @@
     return new Date(`${dateValue}T${timeValue}:00`) <= now;
   }
 
-  function isSlotTaken(dateValue, timeValue, barber) {
+  function getBookingDuration(booking) {
+    return Number(booking.duration) || SLOT_INTERVAL_MINUTES;
+  }
+
+  function getBookingEndMinutes(booking) {
+    if (booking.endTime) return timeToMinutes(booking.endTime);
+    return timeToMinutes(booking.time) + getBookingDuration(booking);
+  }
+
+  function hasTimeConflict(dateValue, timeValue, barberId, duration) {
+    const startA = timeToMinutes(timeValue);
+    const endA = startA + duration;
+
     return state.bookings.some((booking) => {
+      const startB = timeToMinutes(booking.time);
+      const endB = getBookingEndMinutes(booking);
+
+      // Interval overlap: startA < endB && endA > startB.
+      // Assim 17:00 fica livre quando uma reserva anterior termina exatamente 17:00.
       return (
         booking.status === "confirmed" &&
         booking.date === dateValue &&
-        booking.time === timeValue &&
-        booking.barber === barber
+        booking.barberId === barberId &&
+        startA < endB &&
+        endA > startB
       );
     });
+  }
+
+  function isSlotTaken(dateValue, timeValue, barber) {
+    return hasTimeConflict(dateValue, timeValue, getBarberIdByName(barber), getSelectedServiceDuration());
+  }
+
+  function slotFitsBusinessHours(dateValue, timeValue, duration) {
+    const hours = getBusinessHours(dateValue);
+    if (!hours) return false;
+    return timeToMinutes(timeValue) + duration <= hours.end;
   }
 
   function sanitizePhone(value) {
@@ -199,6 +294,20 @@
       return window.crypto.randomUUID();
     }
     return `booking-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+  }
+
+  function uniqueTokenId() {
+    if (window.crypto && window.crypto.randomUUID) {
+      return window.crypto.randomUUID();
+    }
+    return `cancel-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+  }
+
+  function getCancellationUrl(booking) {
+    if (!booking.cancelTokenId) return "";
+    const url = new URL("cancelamento.html", window.location.href);
+    url.searchParams.set("token", booking.cancelTokenId);
+    return url.toString();
   }
 
   function setStatus(app, message, type = "info") {
@@ -335,8 +444,14 @@
       return;
     }
 
+    const duration = getSelectedServiceDuration();
+    const barberId = getBarberIdByName(state.barber);
+
     board.innerHTML = slots.map((slot) => {
-      const unavailable = isPastSlot(state.date, slot) || isSlotTaken(state.date, slot, state.barber);
+      const unavailable =
+        isPastSlot(state.date, slot) ||
+        !slotFitsBusinessHours(state.date, slot, duration) ||
+        hasTimeConflict(state.date, slot, barberId, duration);
       const selected = state.time === slot ? " is-selected" : "";
       const disabled = unavailable ? " disabled" : "";
       return `<button class="timeline-slot${selected}" type="button" data-slot="${slot}"${disabled}>${slot}</button>`;
@@ -359,6 +474,8 @@
     const firstDay = new Date(year, monthIndex, 1).getDay();
     const totalDays = new Date(year, monthIndex + 1, 0).getDate();
     const previousDisabled = month <= currentMonth ? " disabled" : "";
+    const duration = getSelectedServiceDuration();
+    const barberId = getBarberIdByName(state.barber);
 
     const blanks = Array.from({ length: firstDay }, () => '<span class="calendar-empty" aria-hidden="true"></span>').join("");
     const days = Array.from({ length: totalDays }, (_, index) => {
@@ -368,7 +485,11 @@
       const closed = date.getDay() === 0;
       const past = value < todayValue;
       const hasSlots = !closed && !past && generateSlots(value).some((slot) => {
-        return !isPastSlot(value, slot) && !isSlotTaken(value, slot, state.barber);
+        return (
+          !isPastSlot(value, slot) &&
+          slotFitsBusinessHours(value, slot, duration) &&
+          !hasTimeConflict(value, slot, barberId, duration)
+        );
       });
       const disabled = closed || past || !hasSlots ? " disabled" : "";
       const selected = state.date === value ? " is-selected" : "";
@@ -401,7 +522,10 @@
     if (state.date < toDateInputValue(new Date())) return { error: "Nao e possivel agendar uma data passada." };
     if (!getBusinessHours(state.date)) return { error: "Domingo estamos fechados. Escolha outra data." };
     if (!state.time) return { error: "Escolha um horario disponivel." };
-    if (isSlotTaken(state.date, state.time, state.barber)) return { error: "Esse horario acabou de ser reservado. Escolha outro." };
+    const duration = getSelectedServiceDuration();
+    const barberId = getBarberIdByName(state.barber);
+    if (!slotFitsBusinessHours(state.date, state.time, duration)) return { error: "Esse servico ultrapassa o horario de funcionamento. Escolha outro horario." };
+    if (hasTimeConflict(state.date, state.time, barberId, duration)) return { error: "Esse horario acabou de ser reservado. Escolha outro." };
     if (!clientName) return { error: "Informe seu nome para confirmar." };
     if (sanitizePhone(clientWhatsapp).length < 10) return { error: "Informe um WhatsApp valido." };
 
@@ -413,7 +537,9 @@
         clientWhatsapp,
         clientEmail,
         date: state.date,
-        time: state.time
+        time: state.time,
+        duration,
+        endTime: getEndTime(state.time, duration)
       }
     };
   }
@@ -421,6 +547,7 @@
   function hasDuplicateClientBooking(data) {
     const phone = sanitizePhone(data.clientWhatsapp);
     const email = normalizeText(data.clientEmail);
+    const barberId = getBarberIdByName(data.barber);
 
     return state.bookings.some((booking) => {
       const sameEmail = email !== "nao informado" && normalizeText(booking.clientEmail) === email;
@@ -428,20 +555,22 @@
         booking.status === "confirmed" &&
         booking.date === data.date &&
         booking.time === data.time &&
-        booking.barber === data.barber &&
+        booking.barberId === barberId &&
         (sanitizePhone(booking.clientWhatsapp) === phone || sameEmail)
       );
     });
   }
 
   function getWhatsappUrl(booking) {
+    const cancellationUrl = getCancellationUrl(booking);
     const message = [
       "Olá, meu agendamento na Invictus Barber foi confirmado.",
       `Serviço: ${booking.service}`,
       `Barbeiro: ${booking.barber}`,
       `Data: ${formatDate(booking.date)}`,
-      `Horário: ${booking.time}`
-    ].join("\n");
+      `Horário: ${booking.time}`,
+      cancellationUrl ? `Cancelar agendamento: ${cancellationUrl}` : ""
+    ].filter(Boolean).join("\n");
 
     return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
   }
@@ -659,7 +788,7 @@
     const dateInput = app.querySelector("[data-booking-date]");
     const submitButton = app.querySelector("[data-booking-submit]");
 
-    state.bookings = await window.InvictusStorage.listBookings();
+    state.bookings = [];
     dateInput.min = toDateInputValue(new Date());
     renderChoices(app);
     renderCalendar(app);
@@ -668,7 +797,7 @@
     setStep(app, "service");
     updateSummary(app);
 
-    app.addEventListener("click", (event) => {
+    app.addEventListener("click", async (event) => {
       const categoryButton = event.target.closest(".service-category__head[data-service-category]");
       const serviceButton = event.target.closest("[data-service]");
       const barberButton = event.target.closest("[data-barber]");
@@ -698,6 +827,7 @@
         state.barber = "";
         state.date = "";
         state.time = "";
+        state.bookings = [];
         dateInput.value = "";
         state.calendarMonth = toCalendarMonth();
         setStatus(app, "Servico selecionado. Agora escolha seu barbeiro.", "info");
@@ -711,6 +841,9 @@
         state.barber = barberButton.dataset.barber;
         state.time = "";
         setStatus(app, "Profissional escolhido. Agora selecione a data.", "info");
+        if (state.date) {
+          await syncBookingsForSelectedSlot(app);
+        }
         renderChoices(app);
         renderCalendar(app);
         renderSlots(app);
@@ -731,6 +864,7 @@
         state.date = calendarDay.dataset.calendarDay;
         state.time = "";
         dateInput.value = state.date;
+        await syncBookingsForSelectedSlot(app);
         setStatus(app, "Data escolhida. Selecione um horario disponivel.", "info");
         renderCalendar(app);
         renderSlots(app);
@@ -747,10 +881,13 @@
       updateSummary(app);
     });
 
-    dateInput.addEventListener("change", () => {
+    dateInput.addEventListener("change", async () => {
       state.date = dateInput.value;
       state.time = "";
       state.calendarMonth = toCalendarMonth(state.date);
+      if (state.date) {
+        await syncBookingsForSelectedSlot(app);
+      }
       setStatus(app, state.date ? "Horarios atualizados para a data escolhida." : "", "info");
       renderCalendar(app);
       renderSlots(app);
@@ -781,6 +918,16 @@
         return;
       }
 
+      // Prevencao de conflito: consulta o Firestore/localStorage de novo
+      // imediatamente antes de salvar para capturar reservas feitas em outra aba.
+      await syncBookingsForSelectedSlot(app);
+      if (hasTimeConflict(validation.data.date, validation.data.time, getBarberIdByName(validation.data.barber), validation.data.duration)) {
+        renderSlots(app);
+        updateSummary(app);
+        setStatus(app, "Esse horario acabou de ser reservado. Escolha outro.", "error");
+        return;
+      }
+
       if (hasDuplicateClientBooking(validation.data)) {
         setStatus(app, "Esse agendamento ja existe para seus dados. Revise o resumo.", "error");
         return;
@@ -790,19 +937,40 @@
       setStatus(app, "Confirmando sua reserva premium...", "info");
 
       window.setTimeout(async () => {
-        const booking = {
-          id: bookingId(),
-          ...validation.data,
-          status: "confirmed",
-          createdAt: new Date().toISOString()
-        };
+        try {
+          const selectedBarber = getBarberByName(validation.data.barber);
+          const now = new Date().toISOString();
+          const booking = {
+            id: bookingId(),
+            ...validation.data,
+            barberId: selectedBarber ? selectedBarber.id : validation.data.barber.toLowerCase(),
+            barberName: validation.data.barber,
+            cancelTokenId: uniqueTokenId(),
+            cancelTokenCreatedAt: now,
+            status: "confirmed",
+            createdAt: now
+          };
 
-        await window.InvictusStorage.saveBooking(booking);
-        state.bookings = await window.InvictusStorage.listBookings();
-        setLoading(submitButton, false);
-        setStatus(app, "Agendamento confirmado. Sua experiencia Invictus foi reservada.", "success");
-        renderSlots(app);
-        showBookingConfirmation(booking);
+          const savedBooking = await window.InvictusStorage.saveBooking(booking);
+          state.bookings = await window.InvictusStorage.listBookings(getAvailabilityFilters(savedBooking.date, savedBooking.barber));
+          setLoading(submitButton, false);
+          setStatus(app, "Agendamento confirmado. Sua experiencia Invictus foi reservada.", "success");
+          renderSlots(app);
+          showBookingConfirmation(savedBooking);
+        } catch (error) {
+          setLoading(submitButton, false);
+          await syncBookingsForSelectedSlot(app, { silent: true });
+          renderSlots(app);
+          updateSummary(app);
+
+          if (error && error.code === "slot-taken") {
+            setStatus(app, "Esse horario acabou de ser reservado. Escolha outro.", "error");
+            return;
+          }
+
+          setStatus(app, "Nao foi possivel confirmar agora. Tente novamente.", "error");
+          console.warn("Falha ao confirmar agendamento.", error);
+        }
       }, 650);
     });
   }
