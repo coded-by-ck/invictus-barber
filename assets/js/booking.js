@@ -348,6 +348,11 @@
   }
 
   function setLoading(button, isLoading) {
+    if (!(button instanceof Element)) {
+      Array.from(button || []).forEach((item) => setLoading(item, isLoading));
+      return;
+    }
+
     button.classList.toggle("is-loading", isLoading);
     button.disabled = isLoading;
     button.innerHTML = isLoading ? "Confirmando..." : 'Confirmar agendamento <span aria-hidden="true">→</span>';
@@ -380,17 +385,26 @@
   }
 
   function updateSummary(app) {
+    const hasSummary = Boolean(state.service || state.barber || state.date || state.time);
+    app.querySelectorAll(".booking-mini-summary").forEach((summary) => {
+      summary.dataset.summaryEmpty = String(!hasSummary);
+    });
+
     app.querySelectorAll("[data-summary-service]").forEach((item) => {
-      item.textContent = state.service || "Servico";
+      item.textContent = state.service || "Aguardando escolha";
+      item.classList.toggle("is-empty", !state.service);
     });
     app.querySelectorAll("[data-summary-barber]").forEach((item) => {
-      item.textContent = state.barber || "Barbeiro";
+      item.textContent = state.barber || "Aguardando escolha";
+      item.classList.toggle("is-empty", !state.barber);
     });
     app.querySelectorAll("[data-summary-date]").forEach((item) => {
-      item.textContent = state.date ? formatDate(state.date) : "Data";
+      item.textContent = state.date ? formatDate(state.date) : "Aguardando escolha";
+      item.classList.toggle("is-empty", !state.date);
     });
     app.querySelectorAll("[data-summary-time]").forEach((item) => {
-      item.textContent = state.time || "Horario";
+      item.textContent = state.time || "Aguardando escolha";
+      item.classList.toggle("is-empty", !state.time);
     });
     updateSteps(app);
   }
@@ -824,7 +838,7 @@
 
     const form = app.querySelector("[data-booking-concierge]");
     const dateInput = app.querySelector("[data-booking-date]");
-    const submitButton = app.querySelector("[data-booking-submit]");
+    const submitButton = app.querySelectorAll("[data-booking-submit]");
     const nameInput = form.elements.clientName;
     const whatsappInput = form.elements.clientWhatsapp;
 

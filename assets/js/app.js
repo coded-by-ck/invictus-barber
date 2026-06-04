@@ -372,6 +372,13 @@ window.addEventListener("scroll", () => {
   updateParallax();
 });
 window.addEventListener("resize", resizeCanvas);
+window.addEventListener("resize", () => {
+  if (window.innerWidth > 1024) closeMenu();
+});
+
+document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape") closeMenu();
+});
 
 setupReveal();
 setupAccordion();

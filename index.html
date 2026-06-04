@@ -468,10 +468,10 @@
               </p>
             </div>
             <div class="booking-mini-summary" aria-label="Resumo atual">
-              <span data-summary-service>Servico</span>
-              <span data-summary-barber>Barbeiro</span>
-              <span data-summary-date>Data</span>
-              <span data-summary-time>Horario</span>
+              <span data-summary-service data-summary-label="Servico">Servico</span>
+              <span data-summary-barber data-summary-label="Profissional">Barbeiro</span>
+              <span data-summary-date data-summary-label="Data">Data</span>
+              <span data-summary-time data-summary-label="Horario">Horario</span>
             </div>
             <div class="booking-status" data-booking-status role="status" aria-live="polite"></div>
             <a class="booking-self-service" href="meus-agendamentos.html">
@@ -541,7 +541,15 @@
                     required
                   />
                 </label>
+                <label class="booking-field">
+                  <span>Email</span>
+                  <input name="clientEmail" type="email" placeholder="seu@email.com" autocomplete="email" inputmode="email" />
+                </label>
               </div>
+              <button class="booking-final booking-details-submit" type="submit" data-booking-submit>
+                Confirmar agendamento
+                <span aria-hidden="true">â†’</span>
+              </button>
             </section>
 
             <section class="booking-screen" data-booking-stage="confirm" aria-label="Confirmar agendamento">
