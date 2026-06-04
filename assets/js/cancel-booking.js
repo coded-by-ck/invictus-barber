@@ -27,6 +27,7 @@ const copy = document.querySelector("[data-cancel-copy]");
 const status = document.querySelector("[data-cancel-status]");
 const details = document.querySelector("[data-booking-details]");
 const confirmButton = document.querySelector("[data-cancel-confirm]");
+const successPanel = document.querySelector("[data-cancel-success]");
 const fields = {
   client: document.querySelector("[data-detail-client]"),
   barber: document.querySelector("[data-detail-barber]"),
@@ -95,6 +96,12 @@ function renderBooking(booking) {
   fields.date.textContent = formatDate(booking.date);
   fields.time.textContent = booking.time || "-";
   details.hidden = false;
+}
+
+function stopCancelLoading() {
+  confirmButton.disabled = false;
+  confirmButton.textContent = "Cancelar agendamento";
+  confirmButton.removeAttribute("aria-busy");
 }
 
 async function loadCancellation() {
@@ -167,10 +174,13 @@ async function cancelBooking() {
   if (!bookingRef || !tokenRef || !bookingData) return;
 
   confirmButton.disabled = true;
+  confirmButton.textContent = "Cancelando...";
+  confirmButton.setAttribute("aria-busy", "true");
   setStatus("Cancelando agendamento...", "info");
 
   const freshBookingSnapshot = await firestoreModule.getDoc(bookingRef);
   if (!freshBookingSnapshot.exists()) {
+    stopCancelLoading();
     setStatus("Agendamento nao encontrado.", "error");
     return;
   }
@@ -181,11 +191,15 @@ async function cancelBooking() {
   });
 
   if (freshBooking.status === "completed") {
+    confirmButton.textContent = "Cancelar agendamento";
+    confirmButton.removeAttribute("aria-busy");
     setStatus("Este atendimento ja foi concluido e nao pode ser cancelado.", "error");
     return;
   }
 
   if (freshBooking.status === "cancelled") {
+    confirmButton.textContent = "Cancelar agendamento";
+    confirmButton.removeAttribute("aria-busy");
     setStatus("Este agendamento ja estava cancelado.", "success");
     return;
   }
@@ -212,8 +226,10 @@ async function cancelBooking() {
 
   await batch.commit();
 
-  copy.textContent = "Agendamento cancelado. O horario foi liberado.";
-  setStatus("Agendamento cancelado. O horario foi liberado.", "success");
+  details.hidden = true;
+  successPanel.hidden = false;
+  copy.textContent = "Tudo certo por aqui.";
+  setStatus("Agendamento cancelado com sucesso. Seu horário foi liberado.", "success");
 }
 
 confirmButton.addEventListener("click", async () => {
@@ -221,7 +237,7 @@ confirmButton.addEventListener("click", async () => {
     await cancelBooking();
   } catch (error) {
     console.warn("Falha ao cancelar agendamento.", error);
-    confirmButton.disabled = false;
+    stopCancelLoading();
     setStatus("Nao foi possivel cancelar agora. Tente novamente.", "error");
   }
 });

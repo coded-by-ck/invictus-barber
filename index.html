@@ -62,6 +62,7 @@
           <a href="#barbeiros">Barbeiros</a>
           <a href="#galeria">Galeria</a>
           <a href="#localizacao">Contato</a>
+          <a href="meus-agendamentos.html">Meus agendamentos</a>
         </div>
 
         <a class="nav-cta" href="#agenda">Agendar horario</a>
@@ -145,6 +146,71 @@
               <h3 class="text-3d gold-depth">Experiencia Invictus</h3>
             </div>
           </article>
+        </div>
+      </section>
+
+      <section class="section video-experience" id="experiencia-invictus">
+        <div class="video-experience__inner">
+          <div class="video-experience__copy reveal">
+            <p class="eyebrow">EXPERI&Ecirc;NCIA REAL</p>
+            <h2 class="text-3d title-depth">VEJA O RESULTADO ANTES DE AGENDAR</h2>
+            <p>Cortes, acabamento e ambiente pensados para quem busca presen&ccedil;a.</p>
+            <a class="btn btn--primary" href="#agenda">AGENDAR HOR&Aacute;RIO</a>
+          </div>
+          <div class="video-experience__frame reveal">
+            <video
+              class="video-experience__backdrop"
+              src="assets/video/experiencia-invictus.mp4"
+              poster="assets/img/experiencia-invictus.jpg"
+              muted
+              loop
+              playsinline
+              preload="metadata"
+              aria-hidden="true"
+              tabindex="-1"
+            ></video>
+            <video
+              class="video-experience__player"
+              src="assets/video/experiencia-invictus.mp4"
+              poster="assets/img/experiencia-invictus.jpg"
+              controls
+              preload="metadata"
+            >
+              Seu navegador nao suporta video HTML5.
+            </video>
+            <button class="video-experience__play" type="button" aria-label="Reproduzir video Invictus"></button>
+          </div>
+        </div>
+      </section>
+
+      <section class="section experience" id="experiencia">
+        <div class="split">
+          <div class="section-heading reveal">
+            <p class="eyebrow">Experiencia Invictus</p>
+            <h2 class="text-3d title-depth">Ambiente real com acabamento de studio premium.</h2>
+            <p>
+              O visual nasce do que a barbearia ja tem: espelhos circulares,
+              cimento frio, bancada escura, produtos selecionados e hospitalidade.
+            </p>
+          </div>
+          <div class="experience-stack">
+            <figure class="media-card media-card--large reveal tilt-card">
+              <img src="assets/img/bancada.JPG" alt="Bancada da Invictus Barber com produtos e ferramentas" />
+              <figcaption class="text-3d gold-depth">Bancada tecnica</figcaption>
+            </figure>
+            <figure class="media-card reveal tilt-card">
+              <img src="assets/img/produtos-1.JPG" alt="Produtos premium usados na barbearia" />
+              <figcaption class="text-3d gold-depth">Finalizacao premium</figcaption>
+            </figure>
+            <figure class="media-card reveal tilt-card">
+              <img src="assets/img/geladeira.JPG" alt="Geladeira com bebidas no ambiente da Invictus Barber" />
+              <figcaption class="text-3d gold-depth">Hospitalidade</figcaption>
+            </figure>
+            <figure class="media-card reveal tilt-card">
+              <img src="assets/img/molduras.JPG" alt="Parede com quadros e molduras no ambiente da Invictus Barber" />
+              <figcaption class="text-3d gold-depth">Ambiente autoral</figcaption>
+            </figure>
+          </div>
         </div>
       </section>
 
@@ -316,37 +382,6 @@
         </div>
       </section>
 
-      <section class="section experience" id="experiencia">
-        <div class="split">
-          <div class="section-heading reveal">
-            <p class="eyebrow">Experiencia Invictus</p>
-            <h2 class="text-3d title-depth">Ambiente real com acabamento de studio premium.</h2>
-            <p>
-              O visual nasce do que a barbearia ja tem: espelhos circulares,
-              cimento frio, bancada escura, produtos selecionados e hospitalidade.
-            </p>
-          </div>
-          <div class="experience-stack">
-            <figure class="media-card media-card--large reveal tilt-card">
-              <img src="assets/img/bancada.JPG" alt="Bancada da Invictus Barber com produtos e ferramentas" />
-              <figcaption class="text-3d gold-depth">Bancada tecnica</figcaption>
-            </figure>
-            <figure class="media-card reveal tilt-card">
-              <img src="assets/img/produtos-1.JPG" alt="Produtos premium usados na barbearia" />
-              <figcaption class="text-3d gold-depth">Finalizacao premium</figcaption>
-            </figure>
-            <figure class="media-card reveal tilt-card">
-              <img src="assets/img/geladeira.JPG" alt="Geladeira com bebidas no ambiente da Invictus Barber" />
-              <figcaption class="text-3d gold-depth">Hospitalidade</figcaption>
-            </figure>
-            <figure class="media-card reveal tilt-card">
-              <img src="assets/img/molduras.JPG" alt="Parede com quadros e molduras no ambiente da Invictus Barber" />
-              <figcaption class="text-3d gold-depth">Ambiente autoral</figcaption>
-            </figure>
-          </div>
-        </div>
-      </section>
-
       <section class="section barbers" id="barbeiros">
         <div class="section-heading section-heading--center reveal">
           <p class="eyebrow">Mestres da casa</p>
@@ -439,6 +474,11 @@
               <span data-summary-time>Horario</span>
             </div>
             <div class="booking-status" data-booking-status role="status" aria-live="polite"></div>
+            <a class="booking-self-service" href="meus-agendamentos.html">
+              <span aria-hidden="true">↗</span>
+              <strong>Já tenho horário</strong>
+              <small>Consulte ou cancele seu agendamento</small>
+            </a>
           </aside>
 
           <form class="booking-flow" data-booking-concierge novalidate>
@@ -527,21 +567,36 @@
 
       <section class="section location" id="localizacao">
         <div class="location-card reveal">
-          <div>
-            <p class="eyebrow">Localizacao</p>
-            <h2 class="text-3d title-depth">Invictus Barber Studio</h2>
+          <div class="location-card__content">
+            <p class="eyebrow">LOCALIZA&Ccedil;&Atilde;O</p>
+            <h2 class="text-3d title-depth">INVICTUS BARBER STUDIO</h2>
             <p>
-              Atendimento com hora marcada, ambiente reservado e experiencia
+              Atendimento com hora marcada, ambiente reservado e experi&ecirc;ncia
               pensada do primeiro contato ao acabamento final.
             </p>
           </div>
-          <div class="location-card__actions">
-            <a class="btn btn--glass" href="https://wa.me/5500000000000" target="_blank" rel="noreferrer">
-              WhatsApp
-            </a>
-            <a class="btn btn--glass" href="https://maps.google.com" target="_blank" rel="noreferrer">
-              Ver no mapa
-            </a>
+          <div class="location-card__side">
+            <div class="location-card__actions">
+              <a class="btn btn--glass" href="https://wa.me/5500000000000" target="_blank" rel="noreferrer">
+                WHATSAPP
+              </a>
+              <a class="btn btn--glass" href="https://maps.google.com" target="_blank" rel="noreferrer">
+                VER NO MAPA
+              </a>
+            </div>
+            <div class="parking-notice" aria-label="Aviso sobre estacionamento">
+              <span class="parking-notice__icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" focusable="false">
+                  <path d="M5 13l1.5-4.5A3 3 0 0 1 9.35 6h5.3a3 3 0 0 1 2.85 2.5L19 13" />
+                  <path d="M4 13h20" />
+                  <path d="M6 13v5" />
+                  <path d="M20 13v5" />
+                  <path d="M8 18h8" />
+                  <path d="M7.5 10h9" />
+                </svg>
+              </span>
+              <span>ESTACIONAMENTO DISPON&Iacute;VEL COM VAGAS LIMITADAS EM HOR&Aacute;RIOS DE PICO.</span>
+            </div>
           </div>
         </div>
       </section>

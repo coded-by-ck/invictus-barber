@@ -29,12 +29,26 @@ function setStatus(message, type = "info") {
   status.dataset.type = type;
 }
 
-async function getBarberProfile(uid) {
+function getRedirectForProfile(profile) {
+  if (profile.role === "admin") return "master.html";
+  if (profile.role === "barber") return "painel.html";
+  return "";
+}
+
+async function getAdminProfile(uid) {
   const profileRef = firestoreModule.doc(db, "users", uid);
   const profile = await firestoreModule.getDoc(profileRef);
   if (!profile.exists()) return null;
 
   const data = profile.data();
+  if (data.role === "admin") {
+    return {
+      uid,
+      role: data.role,
+      name: data.name || "Administrador"
+    };
+  }
+
   if (data.role !== "barber" || !data.barberId) return null;
 
   return {
@@ -49,12 +63,14 @@ authModule.onAuthStateChanged(auth, async (user) => {
   if (!user) return;
 
   try {
-    const profile = await getBarberProfile(user.uid);
+    const profile = await getAdminProfile(user.uid);
     if (!profile) return;
+    const redirectTo = getRedirectForProfile(profile);
+    if (!redirectTo) return;
     window.sessionStorage.setItem("invictus_admin_profile", JSON.stringify(profile));
-    window.location.replace("painel.html");
+    window.location.replace(redirectTo);
   } catch (error) {
-    console.warn("Nao foi possivel validar o perfil do barbeiro.", error);
+    console.warn("Nao foi possivel validar o perfil administrativo.", error);
   }
 });
 
@@ -75,17 +91,18 @@ form.addEventListener("submit", async (event) => {
 
   try {
     const credential = await authModule.signInWithEmailAndPassword(auth, email, password);
-    const profile = await getBarberProfile(credential.user.uid);
+    const profile = await getAdminProfile(credential.user.uid);
+    const redirectTo = profile ? getRedirectForProfile(profile) : "";
 
-    if (!profile) {
+    if (!profile || !redirectTo) {
       await authModule.signOut(auth);
-      setStatus("Usuario sem perfil de barbeiro configurado.", "error");
+      setStatus("Usuario sem perfil administrativo configurado.", "error");
       return;
     }
 
     window.sessionStorage.setItem("invictus_admin_profile", JSON.stringify(profile));
     setStatus("Acesso liberado.", "success");
-    window.location.assign("painel.html");
+    window.location.assign(redirectTo);
   } catch (error) {
     console.warn("Falha no login do painel.", error);
     setStatus("Email, senha ou permissao invalidos.", "error");

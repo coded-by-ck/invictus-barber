@@ -14,7 +14,6 @@ let particleFrame = null;
 let heroSlideIndex = 0;
 let heroSlideTimer = null;
 let loaderHideTimer = null;
-let monkeyEggActive = false;
 
 function hideLoader(delay = 3800, force = false) {
   const timeout = Number.isFinite(delay) ? delay : 3800;
@@ -300,6 +299,48 @@ function drawParticles() {
   particleFrame = requestAnimationFrame(drawParticles);
 }
 
+function setupExperienceVideo() {
+  const frame = document.querySelector(".video-experience__frame");
+  const video = frame?.querySelector(".video-experience__player");
+  const backdrop = frame?.querySelector(".video-experience__backdrop");
+  const playButton = frame?.querySelector(".video-experience__play");
+
+  if (!frame || !video || !playButton) return;
+
+  function syncPlayingState() {
+    frame.classList.toggle("is-playing", !video.paused && !video.ended);
+
+    if (!backdrop) return;
+
+    if (video.paused || video.ended) {
+      backdrop.pause();
+      return;
+    }
+
+    backdrop.currentTime = video.currentTime;
+    const backdropRequest = backdrop.play();
+    if (backdropRequest) backdropRequest.catch(() => {});
+  }
+
+  playButton.addEventListener("click", () => {
+    if (video.paused || video.ended) {
+      const playRequest = video.play();
+      if (playRequest) playRequest.catch(syncPlayingState);
+      return;
+    }
+
+    video.pause();
+  });
+
+  video.addEventListener("play", syncPlayingState);
+  video.addEventListener("pause", syncPlayingState);
+  video.addEventListener("ended", syncPlayingState);
+  video.addEventListener("seeked", () => {
+    if (backdrop) backdrop.currentTime = video.currentTime;
+  });
+  syncPlayingState();
+}
+
 function setupBookingForm() {
   const form = document.querySelector("[data-booking-form]");
   if (!form) return;
@@ -317,92 +358,6 @@ function setupBookingForm() {
 
     window.open(`https://wa.me/5500000000000?text=${encodeURIComponent(message)}`, "_blank", "noopener");
   });
-}
-
-function setupMonkeyEasterEgg() {
-  if (prefersReducedMotion) return;
-
-  const bookingApp = document.querySelector("[data-booking-app]");
-  const bookingSection = document.querySelector("#agenda");
-  const monkeys = [
-    { mood: "peek", flip: "1", scale: "1" },
-    { mood: "dash", flip: "-1", scale: "0.94" },
-    { mood: "hang", flip: "1", scale: "0.88" },
-    { mood: "flip", flip: "-1", scale: "1.04" }
-  ];
-  const positions = ["bottom-right", "bottom-left", "side-right", "near-footer"];
-  let monkeyIndex = 0;
-  let positionIndex = 0;
-
-  function elementInViewport(element, threshold = 0.18) {
-    if (!element) return false;
-    const rect = element.getBoundingClientRect();
-    const visibleY = Math.min(rect.bottom, window.innerHeight) - Math.max(rect.top, 0);
-    return visibleY > Math.min(rect.height, window.innerHeight) * threshold;
-  }
-
-  function bookingIsBusy() {
-    if (!bookingApp) return false;
-    const activeElement = document.activeElement;
-    const hasFocus = activeElement && bookingApp.contains(activeElement);
-    const hasSelection = Boolean(bookingApp.querySelector(".is-selected, .is-current"));
-    const hasTypedField = Array.from(bookingApp.querySelectorAll("input")).some((input) => input.value.trim());
-    return hasFocus || hasSelection || hasTypedField || elementInViewport(bookingSection, 0.24);
-  }
-
-  function cleanupMonkey(monkey) {
-    if (!monkey || !monkey.isConnected) return;
-    monkey.classList.add("is-leaving");
-    window.setTimeout(() => {
-      monkey.remove();
-      monkeyEggActive = false;
-    }, 640);
-  }
-
-  function showMonkey(force = false) {
-    if (monkeyEggActive || document.hidden || document.body.classList.contains("is-locked")) return;
-    if (!force && bookingIsBusy()) return;
-
-    monkeyEggActive = true;
-    const monkeyData = monkeys[monkeyIndex % monkeys.length];
-    const position = positions[positionIndex % positions.length];
-    monkeyIndex += 1;
-    positionIndex += 1;
-
-    const monkey = document.createElement("button");
-    monkey.className = `monkey-egg monkey-egg--${position} monkey-egg--${monkeyData.mood}`;
-    monkey.type = "button";
-    monkey.setAttribute("aria-label", "Easter egg Invictus");
-    monkey.style.setProperty("--monkey-flip", monkeyData.flip);
-    monkey.style.setProperty("--monkey-scale", monkeyData.scale);
-    monkey.innerHTML = `
-      <span class="monkey-egg__banana" aria-hidden="true">&#127820;</span>
-      <span class="monkey-egg__photo" aria-hidden="true"></span>
-      <span class="monkey-egg__spark" aria-hidden="true"></span>
-    `;
-
-    monkey.addEventListener("click", () => {
-      monkey.classList.add("has-banana");
-      window.setTimeout(() => cleanupMonkey(monkey), 1300);
-    }, { once: true });
-
-    document.body.appendChild(monkey);
-    requestAnimationFrame(() => monkey.classList.add("is-visible"));
-
-    const lifetime = 6000 + Math.random() * 2000;
-    window.setTimeout(() => cleanupMonkey(monkey), lifetime);
-  }
-
-  window.invictusMonkey = () => showMonkey(true);
-  window.addEventListener("invictus:loader-ready", () => {
-    window.setTimeout(() => showMonkey(true), 900);
-  }, { once: true });
-
-  if (document.body.classList.contains("is-ready")) {
-    window.setTimeout(() => showMonkey(true), 900);
-  }
-
-  window.setInterval(showMonkey, 60000);
 }
 
 document.body.classList.add("is-locked");
@@ -425,8 +380,8 @@ setupTilt();
 setupHeroCarousel();
 setupHeroDepth();
 setupPremiumMouseInteractions();
+setupExperienceVideo();
 setupBookingForm();
-setupMonkeyEasterEgg();
 setHeaderState();
 resizeCanvas();
 

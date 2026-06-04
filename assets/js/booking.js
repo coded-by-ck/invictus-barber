@@ -50,6 +50,7 @@
   ];
   const WHATSAPP_NUMBER = "5500000000000";
   const SLOT_INTERVAL_MINUTES = 30;
+  const WEEKEND_CLOSED_MESSAGE = "Não atendemos aos sábados e domingos.";
   const WEEK_DAYS = ["D", "S", "T", "Q", "Q", "S", "S"];
   const MONTH_LABELS = [
     "Janeiro",
@@ -148,6 +149,35 @@
     return match ? Number(match[0]) : SLOT_INTERVAL_MINUTES;
   }
 
+  function parseServicePrice(priceLabel) {
+    if (!priceLabel) return 0;
+    const normalized = String(priceLabel)
+      .replace(/[^\d,.-]/g, "")
+      .replace(/\./g, "")
+      .replace(",", ".");
+    const price = Number.parseFloat(normalized);
+    return Number.isFinite(price) ? price : 0;
+  }
+
+  function getServicePriceData(serviceName) {
+    const service = getServiceByName(serviceName);
+    const priceLabel = service && service.price ? service.price : "Não informado";
+    const price = service && service.price ? parseServicePrice(service.price) : 0;
+
+    // Snapshot financeiro: novos bookings guardam o preço do serviço no momento
+    // da reserva, sem exigir esses campos dos agendamentos antigos.
+    return {
+      servicePrice: price,
+      servicePriceLabel: priceLabel,
+      serviceSnapshot: {
+        name: service ? service.name : serviceName,
+        price,
+        priceLabel,
+        duration: service ? service.duration : "Não informado"
+      }
+    };
+  }
+
   function getSelectedServiceDuration() {
     return getServiceDuration(state.service);
   }
@@ -219,10 +249,10 @@
 
   function getBusinessHours(dateValue) {
     const day = new Date(`${dateValue}T12:00:00`).getDay();
-    if (day === 0) return null;
+    if (day === 0 || day === 6) return null;
     return {
       start: 9 * 60,
-      end: day === 6 ? 19 * 60 : 20 * 60
+      end: 20 * 60
     };
   }
 
@@ -282,7 +312,7 @@
   }
 
   function sanitizePhone(value) {
-    return value.replace(/\D/g, "");
+    return value.replace(/\D/g, "").slice(0, 11);
   }
 
   function normalizeText(value) {
@@ -440,7 +470,7 @@
     const slots = generateSlots(state.date);
     if (!slots.length) {
       state.time = "";
-      board.innerHTML = "<p>Domingo a casa descansa. Escolha outra data.</p>";
+      board.innerHTML = `<p>${WEEKEND_CLOSED_MESSAGE}</p>`;
       return;
     }
 
@@ -520,21 +550,24 @@
     if (!state.barber) return { error: "Escolha Pablo ou Marco para abrir a agenda." };
     if (!state.date) return { error: "Escolha uma data disponivel." };
     if (state.date < toDateInputValue(new Date())) return { error: "Nao e possivel agendar uma data passada." };
-    if (!getBusinessHours(state.date)) return { error: "Domingo estamos fechados. Escolha outra data." };
+    if (!getBusinessHours(state.date)) return { error: WEEKEND_CLOSED_MESSAGE };
     if (!state.time) return { error: "Escolha um horario disponivel." };
     const duration = getSelectedServiceDuration();
     const barberId = getBarberIdByName(state.barber);
     if (!slotFitsBusinessHours(state.date, state.time, duration)) return { error: "Esse servico ultrapassa o horario de funcionamento. Escolha outro horario." };
     if (hasTimeConflict(state.date, state.time, barberId, duration)) return { error: "Esse horario acabou de ser reservado. Escolha outro." };
     if (!clientName) return { error: "Informe seu nome para confirmar." };
-    if (sanitizePhone(clientWhatsapp).length < 10) return { error: "Informe um WhatsApp valido." };
+    const clientWhatsappDigits = sanitizePhone(clientWhatsapp);
+    if (clientWhatsappDigits.length < 10) return { error: "Digite um WhatsApp válido com DDD." };
+    const servicePriceData = getServicePriceData(state.service);
 
     return {
       data: {
         service: state.service,
+        ...servicePriceData,
         barber: state.barber,
         clientName,
-        clientWhatsapp,
+        clientWhatsapp: clientWhatsappDigits,
         clientEmail,
         date: state.date,
         time: state.time,
@@ -632,6 +665,7 @@
     const existing = document.querySelector("[data-booking-confirmation]");
     if (existing) existing.remove();
 
+    const cancellationUrl = getCancellationUrl(booking);
     const overlay = document.createElement("div");
     overlay.className = "booking-confirmation-cinema";
     overlay.dataset.bookingConfirmation = "true";
@@ -665,9 +699,13 @@
             <dd>${escapeHtml(booking.time)}</dd>
           </div>
         </dl>
-        <a class="booking-confirmation-card__button" href="#inicio" data-confirmation-home>
-          Voltar ao inicio
-        </a>
+        ${cancellationUrl ? `<p class="booking-confirmation-card__cancel-note">Guarde este link caso precise cancelar seu horário.</p>` : ""}
+        <div class="booking-confirmation-card__actions">
+          ${cancellationUrl ? `<a class="booking-confirmation-card__button booking-confirmation-card__button--cancel" href="${escapeHtml(cancellationUrl)}">Cancelar meu agendamento</a>` : ""}
+          <a class="booking-confirmation-card__button" href="#inicio" data-confirmation-home>
+            Voltar ao inicio
+          </a>
+        </div>
       </article>
     `;
 
@@ -787,6 +825,8 @@
     const form = app.querySelector("[data-booking-concierge]");
     const dateInput = app.querySelector("[data-booking-date]");
     const submitButton = app.querySelector("[data-booking-submit]");
+    const nameInput = form.elements.clientName;
+    const whatsappInput = form.elements.clientWhatsapp;
 
     state.bookings = [];
     dateInput.min = toDateInputValue(new Date());
@@ -885,6 +925,16 @@
       state.date = dateInput.value;
       state.time = "";
       state.calendarMonth = toCalendarMonth(state.date);
+      if (state.date && !getBusinessHours(state.date)) {
+        setStatus(app, WEEKEND_CLOSED_MESSAGE, "error");
+        state.date = "";
+        dateInput.value = "";
+        state.bookings = [];
+        renderCalendar(app);
+        renderSlots(app);
+        updateSummary(app);
+        return;
+      }
       if (state.date) {
         await syncBookingsForSelectedSlot(app);
       }
@@ -897,16 +947,49 @@
       updateSummary(app);
     });
 
-    form.addEventListener("input", () => {
-      if (state.step !== "details") return;
-      const formData = new FormData(form);
-      const clientName = String(formData.get("clientName") || "").trim();
-      const clientWhatsapp = String(formData.get("clientWhatsapp") || "").trim();
+    function limitWhatsappInput() {
+      const digits = sanitizePhone(whatsappInput.value);
+      if (whatsappInput.value.replace(/\D/g, "").length > 11) {
+        whatsappInput.value = digits;
+      }
+      return digits;
+    }
 
-      if (clientName.length >= 2 && sanitizePhone(clientWhatsapp).length >= 10) {
+    function tryAdvanceFromDetails(showError = false) {
+      if (state.step !== "details") return;
+      const clientName = String(nameInput.value || "").trim();
+      const phoneDigits = limitWhatsappInput();
+
+      if (clientName.length >= 2 && phoneDigits.length >= 10) {
         setStatus(app, "Dados recebidos. Revise e confirme sua reserva.", "info");
         setStep(app, "confirm");
+        updateSummary(app);
+        return;
       }
+
+      if (showError && phoneDigits.length > 0 && phoneDigits.length < 10) {
+        setStatus(app, "Digite um WhatsApp válido com DDD.", "error");
+      }
+    }
+
+    whatsappInput.addEventListener("input", limitWhatsappInput);
+
+    whatsappInput.addEventListener("blur", () => {
+      tryAdvanceFromDetails(true);
+    });
+
+    whatsappInput.addEventListener("change", () => {
+      tryAdvanceFromDetails(true);
+    });
+
+    nameInput.addEventListener("blur", () => {
+      tryAdvanceFromDetails(false);
+    });
+
+    form.addEventListener("keydown", (event) => {
+      if (state.step !== "details" || event.key !== "Enter") return;
+      event.preventDefault();
+      tryAdvanceFromDetails(true);
     });
 
     form.addEventListener("submit", async (event) => {
