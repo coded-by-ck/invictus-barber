@@ -50,6 +50,14 @@ function closeMenu() {
 }
 
 function setupReveal() {
+  const heroMobileActions = document.querySelector(".hero .hero__content");
+  const shouldShowHeroActionsImmediately = window.matchMedia("(max-width: 768px)").matches;
+
+  if (heroMobileActions && shouldShowHeroActionsImmediately) {
+    heroMobileActions.classList.add("is-visible");
+    heroMobileActions.style.setProperty("--reveal-delay", "0ms");
+  }
+
   const observer = new IntersectionObserver(
     (entries) => {
       entries.forEach((entry) => {
@@ -62,6 +70,8 @@ function setupReveal() {
   );
 
   document.querySelectorAll(".reveal").forEach((element) => {
+    if (element === heroMobileActions && shouldShowHeroActionsImmediately) return;
+
     const scope = element.closest(".section, .hero, .footer") || document.body;
     const scopedItems = Array.from(scope.querySelectorAll(".reveal"));
     const index = scopedItems.indexOf(element);

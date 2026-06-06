@@ -7968,6 +7968,25 @@ iframe {
     text-align: center;
   }
 
+  .hero .hero__content.reveal,
+  .hero .hero__actions,
+  .hero .hero__actions *,
+  .hero .hero__actions .btn,
+  .hero .hero__actions a[href="#agenda"],
+  .hero .hero__actions a[href="#servicos"] {
+    visibility: visible !important;
+    opacity: 1 !important;
+    filter: none !important;
+    animation: none !important;
+    animation-delay: 0s !important;
+    transition-delay: 0s !important;
+    translate: none !important;
+  }
+
+  .hero .hero__content.reveal {
+    transform: none !important;
+  }
+
   .hero-mobile-logo-text {
     position: absolute;
     z-index: 5;
