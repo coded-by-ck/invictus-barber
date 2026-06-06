@@ -7951,7 +7951,7 @@ iframe {
     grid-template-columns: 1fr;
     align-content: end;
     gap: 0;
-    min-height: clamp(520px, calc(100svh - 118px), 680px);
+    min-height: clamp(500px, calc(100svh - 132px), 660px);
     overflow: hidden;
     border-radius: 6px;
   }
@@ -7964,17 +7964,17 @@ iframe {
     width: min(100%, 440px);
     max-width: 440px;
     margin: 0 auto;
-    padding: 0 10px clamp(26px, 4.5svh, 52px);
+    padding: 0 10px clamp(18px, 3.5svh, 42px);
     text-align: center;
   }
 
   .hero-mobile-logo-text {
     position: absolute;
     z-index: 5;
-    top: clamp(-96px, -15vw, -64px);
+    top: clamp(-112px, -20vw, -72px);
     left: 50%;
     display: block;
-    width: clamp(202px, 61vw, 324px);
+    width: clamp(260px, 84vw, 380px);
     max-width: 90%;
     height: auto;
     margin: 0;
@@ -8364,14 +8364,17 @@ iframe {
   .booking-experience--concierge .booking-service-rail,
   .booking-experience--concierge .service-category__panel {
     grid-template-columns: 1fr;
+    gap: 8px;
     overflow: visible;
   }
 
   .booking-experience--concierge .service-category {
     width: 100%;
+    min-width: 0;
   }
 
   .booking-experience--concierge .service-category:not(.is-open) .service-category__panel {
+    display: none;
     max-height: 0;
     padding-top: 0;
     padding-bottom: 0;
@@ -8379,17 +8382,27 @@ iframe {
     opacity: 0;
   }
 
+  .booking-experience--concierge .service-category:not(.is-open):not(.has-selected) {
+    background: rgba(0, 0, 0, 0.24);
+    box-shadow:
+      0 10px 28px rgba(0, 0, 0, 0.24),
+      0 0 0 1px rgba(255, 235, 176, 0.018),
+      inset 0 1px 0 rgba(255, 246, 210, 0.045) !important;
+  }
+
   .booking-experience--concierge .service-category__head {
-    min-height: 54px;
+    min-height: 50px;
   }
 
   .booking-experience--concierge .service-category.is-open .service-category__panel {
+    display: grid;
     max-height: none;
   }
 
   .booking-experience--concierge .service-row {
     min-height: 78px;
     padding: 12px;
+    border-radius: 8px;
   }
 
   .booking-experience--concierge .service-row img {
@@ -8407,6 +8420,8 @@ iframe {
   }
 
   .booking-experience--concierge .barber-select {
+    display: grid;
+    align-content: end;
     min-height: 190px;
   }
 
@@ -8415,7 +8430,7 @@ iframe {
   }
 
   .booking-experience--concierge .barber-select span {
-    margin-top: 98px;
+    margin-top: 0;
     font-size: 1.25rem;
   }
 
@@ -8459,7 +8474,7 @@ iframe {
 
   .booking-experience--concierge .timeline-slot {
     width: 100%;
-    min-height: 44px;
+    min-height: 46px;
     flex-basis: auto;
   }
 
@@ -8480,6 +8495,7 @@ iframe {
 
   .booking-experience--concierge .booking-confirm-card {
     width: 100%;
+    min-width: 0;
   }
 
   .booking-experience--concierge .booking-final {
@@ -8566,20 +8582,20 @@ iframe {
   }
 
   .hero__inner {
-    min-height: clamp(500px, calc(100svh - 92px), 640px);
+    min-height: clamp(462px, calc(100svh - 122px), 600px);
   }
 
   .hero__content {
     gap: 6px;
     padding-right: 8px;
-    padding-bottom: clamp(22px, 4.5svh, 42px);
+    padding-bottom: clamp(16px, 3.2svh, 34px);
     padding-left: 8px;
   }
 
   .hero-mobile-logo-text {
-    top: clamp(-86px, -15vw, -62px);
-    width: clamp(196px, 68vw, 306px);
-    max-width: 92%;
+    top: clamp(-96px, -20vw, -70px);
+    width: clamp(258px, 84vw, 352px);
+    max-width: 94%;
   }
 
   .hero-mobile-copy {
@@ -8773,7 +8789,21 @@ iframe {
   }
 
   .booking-experience--concierge .service-category__head {
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    gap: 9px;
+    min-height: 48px;
     padding: 10px;
+  }
+
+  .booking-experience--concierge .service-category__icon {
+    width: 30px;
+    height: 30px;
+    font-size: 0.5rem;
+  }
+
+  .booking-experience--concierge .service-category__toggle {
+    width: 26px;
+    height: 26px;
   }
 
   .booking-experience--concierge .service-row {
@@ -8785,6 +8815,14 @@ iframe {
     min-height: 0;
     gap: 8px;
     padding: 12px;
+    box-shadow:
+      0 10px 28px rgba(0, 0, 0, 0.28),
+      inset 0 1px 0 rgba(255, 246, 210, 0.055) !important;
+  }
+
+  .booking-experience--concierge .service-row__body strong {
+    font-size: 0.8rem;
+    line-height: 1.18;
   }
 
   .booking-experience--concierge .service-row__price {
@@ -8794,7 +8832,9 @@ iframe {
 
   .booking-experience--concierge .service-row__select {
     width: 100%;
-    min-height: 34px;
+    min-height: 38px;
+    display: inline-grid;
+    place-items: center;
   }
 
   .booking-experience--concierge .booking-barber-grid {
@@ -8802,7 +8842,8 @@ iframe {
   }
 
   .booking-experience--concierge .barber-select {
-    min-height: 168px;
+    min-height: 176px;
+    padding: 14px;
   }
 
   .booking-experience--concierge .barber-select img {
@@ -8811,7 +8852,7 @@ iframe {
   }
 
   .booking-experience--concierge .barber-select span {
-    margin-top: 80px;
+    margin-top: 0;
     font-size: 1.22rem;
   }
 
@@ -8907,17 +8948,17 @@ iframe {
   }
 
   .hero__inner {
-    min-height: clamp(480px, calc(100svh - 84px), 604px);
+    min-height: clamp(438px, calc(100svh - 126px), 560px);
   }
 
   .hero__content {
-    padding-bottom: clamp(18px, 4svh, 34px);
+    padding-bottom: clamp(14px, 3svh, 28px);
   }
 
   .hero-mobile-logo-text {
-    top: clamp(-70px, -15vw, -60px);
-    width: clamp(184px, 67vw, 280px);
-    max-width: 92%;
+    top: clamp(-82px, -20vw, -68px);
+    width: clamp(268px, 84vw, 320px);
+    max-width: 94%;
   }
 
   .hero-mobile-copy {
@@ -8978,6 +9019,10 @@ iframe {
     padding: 10px;
   }
 
+  .booking-experience--concierge .booking-mini-summary {
+    padding: 11px;
+  }
+
   .booking-experience--concierge .booking-copy h2 {
     font-size: clamp(1.34rem, 8.6vw, 1.8rem);
   }
@@ -8986,6 +9031,26 @@ iframe {
   .booking-experience--concierge .booking-screen__top,
   .booking-experience--concierge .booking-mini-summary span {
     letter-spacing: 0.08em;
+  }
+
+  .booking-experience--concierge .service-category__head {
+    gap: 8px;
+    min-height: 46px;
+    padding: 9px;
+  }
+
+  .booking-experience--concierge .service-category__title strong {
+    font-size: 0.68rem;
+    letter-spacing: 0.08em;
+  }
+
+  .booking-experience--concierge .service-category__title small {
+    font-size: 0.52rem;
+    letter-spacing: 0.05em;
+  }
+
+  .booking-experience--concierge .service-row {
+    padding: 10px;
   }
 
   .booking-experience--concierge .barber-select {
@@ -9006,11 +9071,24 @@ iframe {
   }
 
   .booking-experience--concierge .timeline-slot {
-    min-height: 44px;
+    min-height: 48px;
     font-size: 0.68rem;
   }
 
+  .booking-experience--concierge .booking-field span {
+    font-size: 0.68rem;
+  }
+
+  .booking-experience--concierge .booking-confirm-card p {
+    gap: 6px;
+  }
+
+  .booking-confirmation-card__details div {
+    padding: 12px;
+  }
+
   .booking-final {
+    min-height: 50px;
     padding-right: 12px;
     padding-left: 12px;
     letter-spacing: 0.08em;
