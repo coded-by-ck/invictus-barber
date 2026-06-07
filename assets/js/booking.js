@@ -558,7 +558,8 @@
     const formData = new FormData(form);
     const clientName = String(formData.get("clientName") || "").trim();
     const clientWhatsapp = String(formData.get("clientWhatsapp") || "").trim();
-    const clientEmail = String(formData.get("clientEmail") || "nao informado").trim();
+    const clientEmailRaw = String(formData.get("clientEmail") || "").trim();
+    const clientEmail = clientEmailRaw || "nao informado";
 
     if (!state.service) return { error: "Escolha um servico para continuar." };
     if (!state.barber) return { error: "Escolha Pablo ou Marco para abrir a agenda." };
@@ -572,6 +573,9 @@
     if (hasTimeConflict(state.date, state.time, barberId, duration)) return { error: "Esse horario acabou de ser reservado. Escolha outro." };
     if (!clientName) return { error: "Informe seu nome para confirmar." };
     const clientWhatsappDigits = sanitizePhone(clientWhatsapp);
+    if (clientEmailRaw && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(clientEmailRaw)) {
+      return { error: "Digite um e-mail valido ou deixe o campo em branco." };
+    }
     if (clientWhatsappDigits.length < 10) return { error: "Digite um WhatsApp válido com DDD." };
     const servicePriceData = getServicePriceData(state.service);
 
@@ -680,6 +684,7 @@
     if (existing) existing.remove();
 
     const cancellationUrl = getCancellationUrl(booking);
+    const whatsappUrl = getWhatsappUrl(booking);
     const overlay = document.createElement("div");
     overlay.className = "booking-confirmation-cinema";
     overlay.dataset.bookingConfirmation = "true";
@@ -689,19 +694,24 @@
       </div>
       <article class="booking-confirmation-card" role="dialog" aria-modal="true" aria-labelledby="booking-confirmation-title">
         <span class="booking-confirmation-card__beam" aria-hidden="true"></span>
-        <div class="booking-confirmation-card__mark" aria-hidden="true">IB</div>
+        <div class="booking-confirmation-card__mark" aria-hidden="true">
+          <span class="booking-confirmation-card__check">&#10003;</span>
+          <span class="booking-confirmation-card__logo">IB</span>
+        </div>
         <p class="booking-confirmation-card__eyebrow">Reserva premium concluida</p>
-        <h2 id="booking-confirmation-title">Agendamento Confirmado</h2>
+        <h2 id="booking-confirmation-title">AGENDAMENTO CONFIRMADO</h2>
         <p class="booking-confirmation-card__message">
-          Seu horario esta reservado. A Invictus Barber Studio estara pronta para elevar sua presenca.
+          Seu horario foi reservado com sucesso.<br />
+          A Invictus te espera para uma experiencia pensada nos detalhes.<br />
+          Chegue no horario, venha tranquilo e prepare-se para sair com presenca.
         </p>
         <dl class="booking-confirmation-card__details">
           <div>
-            <dt>Cliente</dt>
-            <dd>${escapeHtml(booking.clientName)}</dd>
+            <dt>Servico</dt>
+            <dd>${escapeHtml(booking.service)}</dd>
           </div>
           <div>
-            <dt>Profissional</dt>
+            <dt>Barbeiro</dt>
             <dd>${escapeHtml(booking.barber)}</dd>
           </div>
           <div>
@@ -715,16 +725,15 @@
         </dl>
         ${cancellationUrl ? `<p class="booking-confirmation-card__cancel-note">Guarde este link caso precise cancelar seu horário.</p>` : ""}
         <div class="booking-confirmation-card__actions">
-          ${cancellationUrl ? `<a class="booking-confirmation-card__button booking-confirmation-card__button--cancel" href="${escapeHtml(cancellationUrl)}">Cancelar meu agendamento</a>` : ""}
-          <a class="booking-confirmation-card__button" href="#inicio" data-confirmation-home>
-            Voltar ao inicio
+          <a class="booking-confirmation-card__button" href="meus-agendamentos.html">
+            Ver meus agendamentos
           </a>
+          ${whatsappUrl ? `<a class="booking-confirmation-card__button booking-confirmation-card__button--whatsapp" href="${escapeHtml(whatsappUrl)}" target="_blank" rel="noopener">Chamar no WhatsApp</a>` : ""}
         </div>
       </article>
     `;
 
     const card = overlay.querySelector(".booking-confirmation-card");
-    const homeButton = overlay.querySelector("[data-confirmation-home]");
     let frame = null;
 
     function updateParallax(event) {
@@ -756,8 +765,11 @@
       card.style.removeProperty("--confirmation-tilt-y");
     });
 
-    homeButton.addEventListener("click", () => {
-      closeConfirmation();
+    overlay.querySelectorAll(".booking-confirmation-card__button").forEach((button) => {
+      button.addEventListener("click", () => {
+        if (button.target === "_blank") return;
+        closeConfirmation();
+      });
     });
 
     document.body.appendChild(overlay);
@@ -839,6 +851,7 @@
     const form = app.querySelector("[data-booking-concierge]");
     const dateInput = app.querySelector("[data-booking-date]");
     const submitButton = app.querySelectorAll("[data-booking-submit]");
+    const detailsNextButton = app.querySelector("[data-booking-details-next]");
     const nameInput = form.elements.clientName;
     const whatsappInput = form.elements.clientWhatsapp;
 
@@ -988,23 +1001,28 @@
 
     whatsappInput.addEventListener("input", limitWhatsappInput);
 
-    whatsappInput.addEventListener("blur", () => {
-      tryAdvanceFromDetails(true);
-    });
-
-    whatsappInput.addEventListener("change", () => {
-      tryAdvanceFromDetails(true);
-    });
-
-    nameInput.addEventListener("blur", () => {
-      tryAdvanceFromDetails(false);
-    });
-
     form.addEventListener("keydown", (event) => {
       if (state.step !== "details" || event.key !== "Enter") return;
       event.preventDefault();
-      tryAdvanceFromDetails(true);
     });
+
+    if (detailsNextButton) {
+      detailsNextButton.addEventListener("click", () => {
+        if (state.step !== "details") return;
+
+        limitWhatsappInput();
+        const validation = validateForm(form);
+
+        if (validation.error) {
+          setStatus(app, validation.error, "error");
+          return;
+        }
+
+        setStatus(app, "Dados recebidos. Revise e confirme sua reserva.", "info");
+        setStep(app, "confirm");
+        updateSummary(app);
+      });
+    }
 
     form.addEventListener("submit", async (event) => {
       event.preventDefault();

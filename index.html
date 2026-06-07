@@ -18,16 +18,15 @@
     <link rel="stylesheet" href="assets/css/ck-loader.css" />
   </head>
   <body>
-    <div class="loader" data-loader>
-      <span class="loader__aura" aria-hidden="true"></span>
-      <span class="loader__scan loader__scan--top" aria-hidden="true"></span>
-      <span class="loader__scan loader__scan--bottom" aria-hidden="true"></span>
-      <div class="loader__brand">
-        <span>IB</span>
-        <strong>Invictus Barber</strong>
-        <small>Studio</small>
+    <div class="loader" data-loader aria-label="Carregando Invictus Barber" role="status">
+      <div class="loader__brand" aria-hidden="true">
+        <span class="loader__mark">
+          <img class="loader__symbol" src="assets/img/logotipo-in.png" alt="" decoding="async" />
+        </span>
+        <strong>Invictus</strong>
+        <small>Barber Studio</small>
       </div>
-      <div class="loader__bar"></div>
+      <span class="loader__progress" aria-hidden="true"></span>
     </div>
 
     <div class="grain" aria-hidden="true"></div>
@@ -555,12 +554,12 @@
                   />
                 </label>
                 <label class="booking-field">
-                  <span>Email</span>
+                  <span>E-mail (opcional)</span>
                   <input name="clientEmail" type="email" placeholder="seu@email.com" autocomplete="email" inputmode="email" />
                 </label>
               </div>
-              <button class="booking-final booking-details-submit" type="submit" data-booking-submit>
-                Confirmar agendamento
+              <button class="booking-final booking-details-submit" type="button" data-booking-details-next>
+                Continuar para confirmacao
                 <span aria-hidden="true">â†’</span>
               </button>
             </section>

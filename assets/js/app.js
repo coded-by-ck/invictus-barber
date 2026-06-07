@@ -15,15 +15,15 @@ let heroSlideIndex = 0;
 let heroSlideTimer = null;
 let loaderHideTimer = null;
 
-function hideLoader(delay = 3800, force = false) {
-  const timeout = Number.isFinite(delay) ? delay : 3800;
+function hideLoader(delay = 900, force = false) {
+  const timeout = Number.isFinite(delay) ? delay : 900;
 
   if (document.body.classList.contains("is-ready")) return;
   if (loaderHideTimer && !force) return;
   if (loaderHideTimer && force) window.clearTimeout(loaderHideTimer);
 
   loaderHideTimer = window.setTimeout(() => {
-    loader.classList.add("is-hidden");
+    if (loader) loader.classList.add("is-hidden");
     document.body.classList.remove("is-locked");
     document.body.classList.add("is-ready");
     window.dispatchEvent(new CustomEvent("invictus:loader-ready"));
@@ -372,7 +372,7 @@ function setupBookingForm() {
 
 document.body.classList.add("is-locked");
 window.addEventListener("load", () => hideLoader());
-window.setTimeout(() => hideLoader(0, true), 4600);
+window.setTimeout(() => hideLoader(0, true), 2200);
 
 navToggle.addEventListener("click", toggleMenu);
 navMenu.querySelectorAll("a").forEach((link) => link.addEventListener("click", closeMenu));
