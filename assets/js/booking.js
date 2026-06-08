@@ -693,13 +693,13 @@
       </div>
       <article class="booking-confirmation-card" role="dialog" aria-modal="true" aria-labelledby="booking-confirmation-title">
         <span class="booking-confirmation-card__beam" aria-hidden="true"></span>
-        <img class="booking-confirmation-card__logo-img" src="assets/img/logotipo-in.png" alt="Invictus Barber Studio" />
+        <img class="booking-confirmation-card__logo-img" src="assets/img/invictus-logo.png" alt="Invictus Barber Studio" />
         <p class="booking-confirmation-card__eyebrow">Reserva premium concluida</p>
         <h2 id="booking-confirmation-title">AGENDAMENTO CONFIRMADO</h2>
         <p class="booking-confirmation-card__message">
-          Seu horario foi reservado com sucesso.<br />
-          A Invictus te espera para um atendimento pensado nos detalhes.<br />
-          Chegue tranquilo. Vai ser um prazer receber voce.
+          Seu hor&aacute;rio foi reservado com sucesso.<br />
+          A Invictus te espera para um atendimento feito com cuidado, presen&ccedil;a e aten&ccedil;&atilde;o aos detalhes.<br />
+          Chegue tranquilo &mdash; vai ser um prazer receber voc&ecirc;.
         </p>
         <section class="booking-confirmation-card__summary" aria-label="Resumo da reserva">
           <h3>Resumo da reserva</h3>
@@ -725,10 +725,10 @@
         ${cancellationUrl ? `<p class="booking-confirmation-card__cancel-note">Guarde este link caso precise cancelar seu horário.</p>` : ""}
         <div class="booking-confirmation-card__actions">
           <a class="booking-confirmation-card__button" href="#inicio" data-confirmation-home>
-            Voltar ao inicio
+            VOLTAR AO IN&Iacute;CIO
           </a>
           <a class="booking-confirmation-card__button booking-confirmation-card__button--secondary" href="meus-agendamentos.html">
-            Meus agendamentos
+            MEUS AGENDAMENTOS
           </a>
         </div>
       </article>

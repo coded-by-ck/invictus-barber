@@ -2979,8 +2979,8 @@ p {
 .booking-confirmation-card {
   position: relative;
   z-index: 2;
-  width: min(580px, 100%);
-  padding: clamp(24px, 4vw, 40px);
+  width: min(560px, 100%);
+  padding: clamp(22px, 3.5vw, 36px);
   overflow: hidden;
   border: 1px solid rgba(214, 180, 111, 0.34);
   border-radius: 12px;
@@ -3046,9 +3046,9 @@ p {
 
 .booking-confirmation-card__logo-img {
   display: block;
-  width: clamp(94px, 24vw, 142px);
+  width: clamp(112px, 22vw, 154px);
   height: auto;
-  margin: 0 auto 12px;
+  margin: 0 auto 10px;
   object-fit: contain;
   filter:
     drop-shadow(0 18px 24px rgba(0, 0, 0, 0.74))
@@ -3074,7 +3074,7 @@ p {
   margin: 0;
   color: #fff4ca;
   font-family: "Oswald", sans-serif;
-  font-size: clamp(1.9rem, 6vw, 3.4rem);
+  font-size: clamp(1.72rem, 5.4vw, 3.05rem);
   font-weight: 700;
   letter-spacing: 0.04em;
   text-transform: uppercase;
@@ -3085,19 +3085,19 @@ p {
 }
 
 .booking-confirmation-card__message {
-  max-width: 40ch;
-  margin: 12px auto 0;
+  max-width: 42ch;
+  margin: 10px auto 0;
   color: rgba(236, 232, 221, 0.76);
-  font-size: clamp(0.92rem, 1.8vw, 1rem);
-  line-height: 1.58;
+  font-size: clamp(0.9rem, 1.7vw, 0.98rem);
+  line-height: 1.52;
   opacity: 0;
   transform: translateY(12px);
   animation: bookingConfirmationItemIn 0.64s var(--ease-soft) 0.5s forwards;
 }
 
 .booking-confirmation-card__summary {
-  margin: clamp(18px, 3vw, 26px) 0 0;
-  padding: 14px;
+  margin: clamp(16px, 2.6vw, 22px) 0 0;
+  padding: 12px;
   border: 1px solid rgba(214, 180, 111, 0.16);
   border-radius: 10px;
   background:
@@ -3127,7 +3127,7 @@ p {
 
 .booking-confirmation-card__details div {
   min-width: 0;
-  padding: 10px;
+  padding: 9px;
   border: 1px solid rgba(214, 180, 111, 0.13);
   border-radius: 8px;
   background: rgba(0, 0, 0, 0.26);
@@ -3163,8 +3163,8 @@ p {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 12px;
-  margin-top: clamp(16px, 3vw, 24px);
+  gap: 10px;
+  margin-top: clamp(14px, 2.6vw, 22px);
   opacity: 0;
   transform: translateY(14px);
   animation: bookingConfirmationItemIn 0.64s var(--ease-soft) 0.74s forwards;
@@ -6435,13 +6435,13 @@ p {
 
   .booking-confirmation-card {
     max-height: calc(100vh - 32px);
-    padding: 20px 14px;
+    padding: 16px 12px;
     overflow-y: auto;
   }
 
   .booking-confirmation-card__logo-img {
-    width: clamp(88px, 34vw, 118px);
-    margin-bottom: 10px;
+    width: clamp(104px, 36vw, 132px);
+    margin-bottom: 8px;
   }
 
   .booking-confirmation-card__eyebrow {
@@ -6451,15 +6451,15 @@ p {
   }
 
   .booking-confirmation-card__message {
-    max-width: 31ch;
-    margin-top: 10px;
-    font-size: 0.86rem;
-    line-height: 1.5;
+    max-width: 33ch;
+    margin-top: 8px;
+    font-size: 0.82rem;
+    line-height: 1.42;
   }
 
   .booking-confirmation-card__summary {
-    margin-top: 14px;
-    padding: 10px;
+    margin-top: 12px;
+    padding: 9px;
   }
 
   .booking-confirmation-card__summary h3 {
@@ -6491,7 +6491,7 @@ p {
   .booking-confirmation-card__actions {
     width: 100%;
     gap: 8px;
-    margin-top: 14px;
+    margin-top: 12px;
   }
 
   .booking-confirmation-card__button {
@@ -9082,11 +9082,11 @@ iframe {
   }
 
   .booking-confirmation-card {
-    padding: 22px 16px;
+    padding: 16px 12px;
   }
 
   .booking-confirmation-card h2 {
-    font-size: clamp(1.72rem, 10vw, 2.55rem);
+    font-size: clamp(1.48rem, 8.5vw, 2.1rem);
   }
 
   .booking-confirmation-card__button {
@@ -9380,6 +9380,24 @@ iframe {
     display: none;
   }
 
+  .section,
+  .footer {
+    content-visibility: auto;
+    contain-intrinsic-size: 720px;
+  }
+
+  .booking,
+  .booking-experience,
+  .booking-experience--concierge,
+  .booking-experience--concierge .booking-command,
+  .booking-experience--concierge .booking-screen,
+  .booking-experience--concierge .booking-service-rail,
+  .booking-experience--concierge .booking-barber-grid,
+  .booking-experience--concierge .booking-calendar,
+  .booking-experience--concierge .booking-timeline {
+    overscroll-behavior: contain;
+  }
+
   .site-header,
   .nav-menu,
   .hero-service,
@@ -9437,11 +9455,21 @@ iframe {
   .booking-experience--concierge .booking-confirm-card,
   .booking-confirmation-card {
     transform: none !important;
+    will-change: auto !important;
   }
 
   .reveal {
     filter: none !important;
     transition-duration: 0.42s !important;
+    transition-delay: 0ms !important;
+    will-change: auto !important;
+  }
+
+  .section .text-3d,
+  .footer .text-3d,
+  .booking-experience--concierge .gold-depth,
+  .booking-confirmation-card h2 {
+    text-shadow: 0 10px 24px rgba(0, 0, 0, 0.62), 0 0 14px rgba(214, 180, 111, 0.1) !important;
   }
 
   .hero::before,
@@ -9465,6 +9493,19 @@ iframe {
   .booking-confirmation-card__particle,
   .booking-confirmation-card__beam {
     display: none !important;
+  }
+
+  .booking-confirmation-card {
+    animation: bookingConfirmationCardIn 0.52s var(--ease-soft) 0.08s forwards !important;
+  }
+
+  .booking-confirmation-card__logo-img,
+  .booking-confirmation-card__eyebrow,
+  .booking-confirmation-card h2,
+  .booking-confirmation-card__message,
+  .booking-confirmation-card__summary,
+  .booking-confirmation-card__actions {
+    animation-duration: 0.42s !important;
   }
 
   .btn,
@@ -9493,5 +9534,19 @@ iframe {
   .loader__mark::after,
   .loader__progress::before {
     animation: none !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }

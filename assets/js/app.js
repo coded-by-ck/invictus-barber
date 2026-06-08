@@ -66,6 +66,14 @@ function setupReveal() {
     heroMobileActions.style.setProperty("--reveal-delay", "0ms");
   }
 
+  if (shouldUseMobilePerformance) {
+    document.querySelectorAll(".reveal").forEach((element) => {
+      element.classList.add("is-visible");
+      element.style.setProperty("--reveal-delay", "0ms");
+    });
+    return;
+  }
+
   const observer = new IntersectionObserver(
     (entries) => {
       entries.forEach((entry) => {
