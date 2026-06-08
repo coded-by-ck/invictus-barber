@@ -172,6 +172,8 @@ img {
   gap: 8px;
   justify-items: center;
   isolation: isolate;
+  perspective: 1120px;
+  perspective-origin: 50% 42%;
   opacity: 0;
   transform: translateY(10px) scale(0.98);
   animation: loaderBrandIn 0.72s var(--ease-soft) 0.06s forwards;
@@ -179,15 +181,17 @@ img {
 
 .loader__brand::before {
   position: absolute;
-  inset: 20px 50% auto;
+  inset: 12px 50% auto;
   z-index: -1;
-  width: min(260px, 58vw);
-  height: min(180px, 34vw);
+  width: min(280px, 62vw);
+  height: min(190px, 36vw);
   content: "";
   transform: translateX(50%);
-  background: radial-gradient(ellipse at center, rgba(214, 180, 111, 0.28), transparent 70%);
-  filter: blur(20px);
-  opacity: 0.76;
+  background:
+    radial-gradient(ellipse at center, rgba(255, 226, 139, 0.18), transparent 58%),
+    radial-gradient(ellipse at center, rgba(214, 180, 111, 0.24), transparent 72%);
+  filter: blur(18px);
+  opacity: 0.72;
 }
 
 .brand__mark {
@@ -208,27 +212,63 @@ img {
 }
 
 .loader__mark {
+  position: relative;
   display: grid;
   place-items: center;
-  width: clamp(92px, 21vw, 144px);
+  width: clamp(92px, 25vw, 148px);
   aspect-ratio: 1;
   transform-style: preserve-3d;
-  perspective: 760px;
-  filter:
-    drop-shadow(0 24px 32px rgba(0, 0, 0, 0.72))
-    drop-shadow(0 0 24px rgba(214, 180, 111, 0.24));
-  animation:
-    loaderSymbolIn 0.78s var(--ease-soft) 0.06s both,
-    loaderSymbolDrift 2.1s ease-in-out 0.86s infinite;
+  perspective: 1120px;
+  perspective-origin: 50% 42%;
+  animation: loaderSymbolIn 0.78s var(--ease-soft) 0.06s both;
+}
+
+.loader__mark::before,
+.loader__mark::after {
+  position: absolute;
+  content: "";
+  pointer-events: none;
+}
+
+.loader__mark::before {
+  inset: 8%;
+  z-index: -1;
+  background: radial-gradient(circle, rgba(214, 180, 111, 0.28), rgba(214, 180, 111, 0.1) 36%, transparent 68%);
+  filter: blur(15px);
+  opacity: 0.68;
+  transform: translateZ(-42px);
+}
+
+.loader__mark::after {
+  top: 8%;
+  left: 50%;
+  z-index: 0;
+  width: 12%;
+  height: 84%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, rgba(78, 47, 8, 0.85), rgba(255, 231, 150, 0.72), rgba(121, 78, 18, 0.84));
+  filter: drop-shadow(0 0 16px rgba(212, 175, 55, 0.24));
+  opacity: 0;
+  transform: translateX(-50%) rotateY(90deg) scaleX(0.2);
+  transform-origin: center;
+  animation: invictusSymbolEdge3D 4.2s linear 0.18s infinite;
 }
 
 .loader__symbol {
+  position: relative;
+  z-index: 1;
   display: block;
   width: 100%;
   height: 100%;
   object-fit: contain;
-  transform: translateZ(24px);
-  animation: loaderSymbolTurn 2.6s ease-in-out 0.86s infinite;
+  backface-visibility: visible;
+  transform-origin: center;
+  transform-style: preserve-3d;
+  will-change: transform, filter;
+  filter:
+    drop-shadow(0 18px 26px rgba(0, 0, 0, 0.85))
+    drop-shadow(0 0 26px rgba(212, 175, 55, 0.28));
+  animation: invictusSymbol3D 4.2s linear 0.18s infinite;
 }
 
 .loader__brand strong {
@@ -286,6 +326,8 @@ img {
   .loader::before,
   .loader__brand,
   .loader__mark,
+  .loader__mark::before,
+  .loader__mark::after,
   .loader__symbol,
   .loader__progress,
   .loader__progress::before {
@@ -300,8 +342,14 @@ img {
   }
 
   .loader__mark,
+  .loader__mark::before,
+  .loader__mark::after,
   .loader__symbol {
     transform: none;
+  }
+
+  .loader__mark::after {
+    opacity: 0;
   }
 }
 
@@ -2931,8 +2979,8 @@ p {
 .booking-confirmation-card {
   position: relative;
   z-index: 2;
-  width: min(620px, 100%);
-  padding: clamp(28px, 5vw, 48px);
+  width: min(580px, 100%);
+  padding: clamp(24px, 4vw, 40px);
   overflow: hidden;
   border: 1px solid rgba(214, 180, 111, 0.34);
   border-radius: 12px;
@@ -2996,51 +3044,22 @@ p {
   animation: bookingConfirmationBeam 2.8s var(--ease-soft) 0.46s infinite;
 }
 
-.booking-confirmation-card__mark {
-  position: relative;
-  width: 58px;
-  height: 58px;
-  margin: 0 auto 18px;
-  display: grid;
-  place-items: center;
-  border: 1px solid rgba(214, 180, 111, 0.42);
-  border-radius: 50%;
-  color: var(--gold-bright);
-  font-family: "Playfair Display", serif;
-  font-weight: 700;
-  background:
-    radial-gradient(circle at 50% 0%, rgba(255, 246, 210, 0.18), transparent 54%),
-    rgba(0, 0, 0, 0.3);
-  box-shadow: 0 0 28px rgba(214, 180, 111, 0.14), inset 0 1px 0 rgba(255, 246, 210, 0.12);
+.booking-confirmation-card__logo-img {
+  display: block;
+  width: clamp(94px, 24vw, 142px);
+  height: auto;
+  margin: 0 auto 12px;
+  object-fit: contain;
+  filter:
+    drop-shadow(0 18px 24px rgba(0, 0, 0, 0.74))
+    drop-shadow(0 0 18px rgba(214, 180, 111, 0.24));
   opacity: 0;
-  transform: translateY(10px) scale(0.9);
+  transform: translateY(10px) scale(0.94);
   animation: bookingConfirmationItemIn 0.58s var(--ease-soft) 0.18s forwards, bookingConfirmationMarkGlow 2.6s ease-in-out 0.86s infinite;
 }
 
-.booking-confirmation-card__check {
-  position: absolute;
-  right: -6px;
-  bottom: -4px;
-  display: grid;
-  place-items: center;
-  width: 24px;
-  height: 24px;
-  border: 1px solid rgba(255, 246, 210, 0.38);
-  border-radius: 50%;
-  color: #080808;
-  font-size: 0.72rem;
-  font-weight: 950;
-  background: linear-gradient(135deg, #fff0b6, #d6b46f 52%, #9d6a25);
-  box-shadow: 0 0 24px rgba(214, 180, 111, 0.24), 0 12px 24px rgba(0, 0, 0, 0.34);
-}
-
-.booking-confirmation-card__logo {
-  display: block;
-  transform: translateX(0.04em);
-}
-
 .booking-confirmation-card__eyebrow {
-  margin: 0 0 10px;
+  margin: 0 0 8px;
   color: var(--gold-bright);
   font-size: 0.68rem;
   font-weight: 900;
@@ -3055,7 +3074,7 @@ p {
   margin: 0;
   color: #fff4ca;
   font-family: "Oswald", sans-serif;
-  font-size: clamp(2rem, 7vw, 4.1rem);
+  font-size: clamp(1.9rem, 6vw, 3.4rem);
   font-weight: 700;
   letter-spacing: 0.04em;
   text-transform: uppercase;
@@ -3066,31 +3085,52 @@ p {
 }
 
 .booking-confirmation-card__message {
-  max-width: 48ch;
-  margin: 16px auto 0;
+  max-width: 40ch;
+  margin: 12px auto 0;
   color: rgba(236, 232, 221, 0.76);
-  font-size: clamp(0.98rem, 2vw, 1.08rem);
-  line-height: 1.7;
+  font-size: clamp(0.92rem, 1.8vw, 1rem);
+  line-height: 1.58;
   opacity: 0;
   transform: translateY(12px);
   animation: bookingConfirmationItemIn 0.64s var(--ease-soft) 0.5s forwards;
 }
 
-.booking-confirmation-card__details {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 10px;
-  margin: clamp(22px, 4vw, 32px) 0 0;
+.booking-confirmation-card__summary {
+  margin: clamp(18px, 3vw, 26px) 0 0;
+  padding: 14px;
+  border: 1px solid rgba(214, 180, 111, 0.16);
+  border-radius: 10px;
+  background:
+    linear-gradient(135deg, rgba(214, 180, 111, 0.055), transparent 44%),
+    rgba(0, 0, 0, 0.24);
+  box-shadow: inset 0 1px 0 rgba(255, 246, 210, 0.055);
   opacity: 0;
   transform: translateY(14px);
   animation: bookingConfirmationItemIn 0.64s var(--ease-soft) 0.62s forwards;
 }
 
+.booking-confirmation-card__summary h3 {
+  margin: 0 0 10px;
+  color: var(--gold-bright);
+  font-size: 0.68rem;
+  font-weight: 950;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.booking-confirmation-card__details {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  margin: 0;
+}
+
 .booking-confirmation-card__details div {
-  padding: 14px;
-  border: 1px solid rgba(214, 180, 111, 0.16);
+  min-width: 0;
+  padding: 10px;
+  border: 1px solid rgba(214, 180, 111, 0.13);
   border-radius: 8px;
-  background: rgba(0, 0, 0, 0.28);
+  background: rgba(0, 0, 0, 0.26);
   box-shadow: inset 0 1px 0 rgba(255, 246, 210, 0.06);
 }
 
@@ -3106,7 +3146,9 @@ p {
 .booking-confirmation-card__details dd {
   margin: 0;
   color: var(--silver);
+  overflow: hidden;
   font-weight: 800;
+  text-overflow: ellipsis;
 }
 
 .booking-confirmation-card__cancel-note {
@@ -3122,7 +3164,7 @@ p {
   flex-wrap: wrap;
   justify-content: center;
   gap: 12px;
-  margin-top: clamp(24px, 4vw, 34px);
+  margin-top: clamp(16px, 3vw, 24px);
   opacity: 0;
   transform: translateY(14px);
   animation: bookingConfirmationItemIn 0.64s var(--ease-soft) 0.74s forwards;
@@ -3155,7 +3197,8 @@ p {
   box-shadow: inset 0 0 0 1px rgba(244, 238, 226, 0.08), 0 18px 48px rgba(0, 0, 0, 0.2);
 }
 
-.booking-confirmation-card__button--whatsapp {
+.booking-confirmation-card__button--whatsapp,
+.booking-confirmation-card__button--secondary {
   color: var(--silver);
   background:
     linear-gradient(135deg, rgba(214, 180, 111, 0.16), rgba(0, 0, 0, 0.58)),
@@ -5738,8 +5781,9 @@ p {
   color: rgba(236, 232, 221, 0.44);
   font-size: 0.68rem;
   font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  line-height: 1.5;
+  letter-spacing: 0.02em;
+  text-transform: none;
 }
 
 .footer__nav,
@@ -5797,15 +5841,17 @@ p {
 }
 
 .footer__socials {
-  display: grid;
-  gap: 9px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
 }
 
 .footer__social {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
-  min-height: 40px;
+  justify-content: center;
+  min-width: 44px;
+  min-height: 44px;
   color: rgba(236, 232, 221, 0.68);
   font-size: 0.74rem;
   font-weight: 900;
@@ -5818,8 +5864,8 @@ p {
   display: grid;
   place-items: center;
   flex: 0 0 34px;
-  width: 34px;
-  height: 34px;
+  width: 38px;
+  height: 38px;
   border: 1px solid rgba(214, 180, 111, 0.34);
   border-radius: 50%;
   color: var(--gold-bright);
@@ -5828,6 +5874,21 @@ p {
     inset 0 1px 0 rgba(255, 246, 210, 0.1),
     0 0 0 rgba(214, 180, 111, 0);
   transition: border-color 0.32s ease, box-shadow 0.32s ease, transform 0.32s var(--ease-soft), background 0.32s ease;
+}
+
+.footer__social svg {
+  display: block;
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.8;
+}
+
+.footer__social svg path:first-child {
+  fill: none;
 }
 
 .footer__social:hover,
@@ -6069,29 +6130,55 @@ p {
   }
 }
 
-@keyframes loaderSymbolDrift {
-  0%,
-  100% {
+@keyframes invictusSymbol3D {
+  0% {
     filter:
-      drop-shadow(0 24px 32px rgba(0, 0, 0, 0.72))
-      drop-shadow(0 0 22px rgba(214, 180, 111, 0.2));
-    transform: translateY(0) scale(1);
+      drop-shadow(0 18px 26px rgba(0, 0, 0, 0.85))
+      drop-shadow(0 0 18px rgba(212, 175, 55, 0.18));
+    transform: translateZ(42px) rotateX(0deg) rotateY(0deg) scale(1);
+  }
+  25% {
+    filter:
+      drop-shadow(0 16px 22px rgba(0, 0, 0, 0.88))
+      drop-shadow(0 0 20px rgba(212, 175, 55, 0.22));
+    transform: translateZ(20px) rotateX(5deg) rotateY(90deg) scale(0.96);
   }
   50% {
     filter:
-      drop-shadow(0 26px 34px rgba(0, 0, 0, 0.74))
-      drop-shadow(0 0 30px rgba(214, 180, 111, 0.3));
-    transform: translateY(-3px) scale(1.018);
+      drop-shadow(0 22px 32px rgba(0, 0, 0, 0.9))
+      drop-shadow(0 0 32px rgba(212, 175, 55, 0.34));
+    transform: translateZ(44px) rotateX(0deg) rotateY(180deg) scale(1.02);
+  }
+  75% {
+    filter:
+      drop-shadow(0 16px 22px rgba(0, 0, 0, 0.88))
+      drop-shadow(0 0 20px rgba(212, 175, 55, 0.22));
+    transform: translateZ(20px) rotateX(-5deg) rotateY(270deg) scale(0.96);
+  }
+  100% {
+    filter:
+      drop-shadow(0 18px 26px rgba(0, 0, 0, 0.85))
+      drop-shadow(0 0 18px rgba(212, 175, 55, 0.18));
+    transform: translateZ(42px) rotateX(0deg) rotateY(360deg) scale(1);
   }
 }
 
-@keyframes loaderSymbolTurn {
+@keyframes invictusSymbolEdge3D {
   0%,
+  14%,
+  38%,
+  62%,
+  86%,
   100% {
-    transform: translateZ(24px) rotateX(0deg) rotateY(-7deg);
+    opacity: 0;
+    transform: translateX(-50%) rotateY(90deg) scaleX(0.2);
   }
-  50% {
-    transform: translateZ(30px) rotateX(3deg) rotateY(8deg);
+  23%,
+  27%,
+  73%,
+  77% {
+    opacity: 0.72;
+    transform: translateX(-50%) rotateY(90deg) scaleX(0.78);
   }
 }
 
@@ -6348,39 +6435,63 @@ p {
 
   .booking-confirmation-card {
     max-height: calc(100vh - 32px);
-    padding: 24px 18px;
+    padding: 20px 14px;
     overflow-y: auto;
   }
 
-  .booking-confirmation-card__mark {
-    width: 50px;
-    height: 50px;
-    margin-bottom: 14px;
+  .booking-confirmation-card__logo-img {
+    width: clamp(88px, 34vw, 118px);
+    margin-bottom: 10px;
   }
 
-  .booking-confirmation-card__check {
-    width: 22px;
-    height: 22px;
-    font-size: 0.66rem;
+  .booking-confirmation-card__eyebrow {
+    margin-bottom: 6px;
+    font-size: 0.56rem;
+    letter-spacing: 0.16em;
   }
 
   .booking-confirmation-card__message {
-    max-width: 32ch;
-    font-size: 0.92rem;
-    line-height: 1.58;
+    max-width: 31ch;
+    margin-top: 10px;
+    font-size: 0.86rem;
+    line-height: 1.5;
+  }
+
+  .booking-confirmation-card__summary {
+    margin-top: 14px;
+    padding: 10px;
+  }
+
+  .booking-confirmation-card__summary h3 {
+    margin-bottom: 8px;
+    font-size: 0.58rem;
+    letter-spacing: 0.12em;
   }
 
   .booking-confirmation-card__details {
-    grid-template-columns: 1fr;
-    gap: 8px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 6px;
   }
 
   .booking-confirmation-card__details div {
-    padding: 12px;
+    padding: 8px;
+  }
+
+  .booking-confirmation-card__details dt {
+    margin-bottom: 4px;
+    font-size: 0.5rem;
+    letter-spacing: 0.1em;
+  }
+
+  .booking-confirmation-card__details dd {
+    font-size: 0.76rem;
+    line-height: 1.25;
   }
 
   .booking-confirmation-card__actions {
     width: 100%;
+    gap: 8px;
+    margin-top: 14px;
   }
 
   .booking-confirmation-card__button {
@@ -7138,11 +7249,11 @@ p {
     transform: none !important;
   }
 
-  .booking-confirmation-card__mark,
+  .booking-confirmation-card__logo-img,
   .booking-confirmation-card__eyebrow,
   .booking-confirmation-card h2,
   .booking-confirmation-card__message,
-  .booking-confirmation-card__details,
+  .booking-confirmation-card__summary,
   .booking-confirmation-card__actions {
     opacity: 1;
     transform: none !important;
@@ -9155,4 +9266,232 @@ iframe {
 
 .gallery-item gallery-item--wide reveal tilt-card{
   object-position: center 8% !important;
+}
+
+/* FOOTER COMPACT REFINEMENT */
+.footer__social:focus-visible,
+.ck-signature:focus-visible {
+  outline: 2px solid rgba(214, 180, 111, 0.72);
+  outline-offset: 4px;
+}
+
+@media (max-width: 768px) {
+  .footer {
+    padding: 22px 12px 18px !important;
+  }
+
+  .footer::before {
+    opacity: 0.08;
+  }
+
+  .footer__inner {
+    grid-template-columns: 1fr !important;
+    justify-items: center !important;
+    gap: 14px !important;
+    width: 100%;
+    padding: 16px 14px !important;
+    text-align: center;
+  }
+
+  .footer__brand {
+    order: 1;
+    justify-items: center !important;
+    gap: 8px !important;
+  }
+
+  .footer__brand .brand {
+    justify-self: center !important;
+  }
+
+  .footer__brand p,
+  .footer__nav,
+  .footer__contact > span {
+    display: none !important;
+  }
+
+  .footer__rights {
+    max-width: 28ch;
+    font-size: 0.62rem;
+    line-height: 1.45;
+    letter-spacing: 0.01em;
+  }
+
+  .footer__contact {
+    order: 2;
+    justify-items: center !important;
+    gap: 0 !important;
+  }
+
+  .footer__socials {
+    display: flex !important;
+    justify-content: center !important;
+    gap: 10px !important;
+  }
+
+  .footer__social {
+    width: 46px;
+    min-width: 46px;
+    min-height: 46px;
+    padding: 0;
+  }
+
+  .footer__social span {
+    flex-basis: 40px;
+    width: 40px;
+    height: 40px;
+  }
+
+  .footer__social svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .ck-signature {
+    order: 3;
+    justify-self: center !important;
+    min-width: 76px !important;
+    min-height: 76px !important;
+    padding: 12px !important;
+  }
+
+  .ck-signature::before {
+    inset: -10px;
+    opacity: 0.36;
+    filter: none;
+  }
+
+  .ck-signature::after {
+    inset: -12px;
+  }
+
+  .ck-signature > span {
+    font-size: 0.46rem;
+    letter-spacing: 0.14em;
+  }
+
+  .ck-signature > strong {
+    font-size: 1.46rem !important;
+  }
+}
+
+/* MOBILE PERFORMANCE MODE */
+@media (max-width: 768px) {
+  .particles {
+    display: none;
+  }
+
+  .site-header,
+  .nav-menu,
+  .hero-service,
+  .media-card,
+  .barber-card,
+  .gallery-item,
+  .location-card,
+  .parking-notice,
+  .video-experience__frame,
+  .booking-experience,
+  .booking-experience--concierge,
+  .booking-experience--concierge .booking-command,
+  .booking-experience--concierge .booking-screen.is-active,
+  .booking-experience--concierge .booking-mini-summary,
+  .booking-experience--concierge .service-category,
+  .booking-experience--concierge .service-row,
+  .booking-experience--concierge .barber-select,
+  .booking-experience--concierge .calendar,
+  .booking-experience--concierge .timeline-slot,
+  .booking-experience--concierge .booking-confirm-card,
+  .booking-confirmation-card {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+
+  .tilt-card,
+  .tilt-card:hover,
+  .hero-service,
+  .media-card,
+  .barber-card,
+  .gallery-item,
+  .service-panel,
+  .location-card,
+  .parking-notice,
+  .booking-experience--concierge .booking-command,
+  .booking-experience--concierge .booking-screen.is-active,
+  .booking-experience--concierge .service-category,
+  .booking-experience--concierge .service-row,
+  .booking-experience--concierge .barber-select,
+  .booking-experience--concierge .calendar,
+  .booking-experience--concierge .timeline-slot,
+  .booking-experience--concierge .booking-confirm-card,
+  .booking-final,
+  .booking-confirmation-card,
+  .booking-confirmation-card__details div {
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.24), 0 0 14px rgba(214, 180, 111, 0.045) !important;
+  }
+
+  .tilt-card,
+  .tilt-card:hover,
+  .booking-experience--concierge .barber-select,
+  .booking-experience--concierge .service-category,
+  .booking-experience--concierge .service-row,
+  .booking-experience--concierge .timeline-slot,
+  .booking-experience--concierge .booking-confirm-card,
+  .booking-confirmation-card {
+    transform: none !important;
+  }
+
+  .reveal {
+    filter: none !important;
+    transition-duration: 0.42s !important;
+  }
+
+  .hero::before,
+  .hero::after,
+  .hero-visual::before,
+  .hero-visual::after,
+  .media-card::before,
+  .barber-card::before,
+  .gallery-item::before,
+  .booking-experience--concierge .booking-command::before,
+  .booking-experience--concierge .booking-screen::before,
+  .booking-confirmation-card::before {
+    animation: none !important;
+  }
+
+  .video-experience__backdrop {
+    filter: blur(12px) saturate(0.68) contrast(1.05) brightness(0.38) !important;
+  }
+
+  .booking-confirmation-card__particles,
+  .booking-confirmation-card__particle,
+  .booking-confirmation-card__beam {
+    display: none !important;
+  }
+
+  .btn,
+  .nav-cta,
+  .booking-final,
+  .booking-confirmation-card__button {
+    transition:
+      background 0.22s ease,
+      border-color 0.22s ease,
+      color 0.22s ease,
+      transform 0.18s var(--ease-soft) !important;
+  }
+
+  .btn:hover,
+  .nav-cta:hover,
+  .booking-final:hover,
+  .booking-confirmation-card__button:hover {
+    transform: translateY(-1px) !important;
+  }
+}
+
+@media (max-width: 768px) and (prefers-reduced-motion: reduce) {
+  .hero-visual__slide,
+  .hero-visual__slide img,
+  .loader__symbol,
+  .loader__mark::after,
+  .loader__progress::before {
+    animation: none !important;
+  }
 }

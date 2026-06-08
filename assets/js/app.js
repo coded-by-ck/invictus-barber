@@ -8,6 +8,11 @@ const canvas = document.querySelector("[data-particles]");
 const ctx = canvas.getContext("2d");
 const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 const prefersTouch = window.matchMedia("(hover: none), (pointer: coarse)").matches;
+const mobilePerformanceQuery = window.matchMedia("(max-width: 768px)");
+const shouldUseMobilePerformance = prefersTouch || mobilePerformanceQuery.matches;
+const LOADER_MIN_TIME = prefersReducedMotion ? 1400 : 3200;
+const LOADER_FORCE_READY_TIME = prefersReducedMotion ? 3000 : 5600;
+const loaderStartedAt = Date.now();
 
 let particles = [];
 let particleFrame = null;
@@ -15,8 +20,11 @@ let heroSlideIndex = 0;
 let heroSlideTimer = null;
 let loaderHideTimer = null;
 
-function hideLoader(delay = 900, force = false) {
-  const timeout = Number.isFinite(delay) ? delay : 900;
+function hideLoader(delay = 0, force = false) {
+  const baseDelay = Number.isFinite(delay) ? delay : 0;
+  const elapsed = Date.now() - loaderStartedAt;
+  const remainingMinTime = Math.max(0, LOADER_MIN_TIME - elapsed);
+  const timeout = force ? baseDelay : Math.max(baseDelay, remainingMinTime);
 
   if (document.body.classList.contains("is-ready")) return;
   if (loaderHideTimer && !force) return;
@@ -257,6 +265,17 @@ function setupPremiumMouseInteractions() {
 }
 
 function resizeCanvas() {
+  if (shouldUseMobilePerformance) {
+    particles = [];
+    if (canvas) {
+      canvas.width = 1;
+      canvas.height = 1;
+      canvas.style.width = "1px";
+      canvas.style.height = "1px";
+    }
+    return;
+  }
+
   const ratio = window.devicePixelRatio || 1;
   canvas.width = window.innerWidth * ratio;
   canvas.height = window.innerHeight * ratio;
@@ -372,7 +391,7 @@ function setupBookingForm() {
 
 document.body.classList.add("is-locked");
 window.addEventListener("load", () => hideLoader());
-window.setTimeout(() => hideLoader(0, true), 2200);
+window.setTimeout(() => hideLoader(0, true), LOADER_FORCE_READY_TIME);
 
 navToggle.addEventListener("click", toggleMenu);
 navMenu.querySelectorAll("a").forEach((link) => link.addEventListener("click", closeMenu));
@@ -402,7 +421,7 @@ setupBookingForm();
 setHeaderState();
 resizeCanvas();
 
-if (!prefersReducedMotion) {
+if (!prefersReducedMotion && !shouldUseMobilePerformance) {
   drawParticles();
 }
 
@@ -415,7 +434,7 @@ document.addEventListener("visibilitychange", () => {
     return;
   }
 
-  if (!prefersReducedMotion && !particleFrame) {
+  if (!prefersReducedMotion && !shouldUseMobilePerformance && !particleFrame) {
     drawParticles();
   }
 

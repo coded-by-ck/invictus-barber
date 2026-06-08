@@ -31,7 +31,7 @@
         "Corte + barba",
         "Corte + barba + sobrancelha",
         "Corte + cavanhaque + sobrancelha",
-        "Corte + hidrataÃ§Ã£o",
+        "Corte + hidratação",
         "Luzes + corte",
         "Nevou + corte"
       ]
@@ -39,7 +39,7 @@
     {
       name: "Tratamentos",
       icon: "04",
-      services: ["HidrataÃ§Ã£o", "Limpeza de pele", "Luzes", "Nevou", "Selagem"]
+      services: ["Hidratação", "Limpeza de pele", "Luzes", "Nevou", "Selagem"]
     },
     { name: "Extras", icon: "05", services: ["Corte + sobrancelha"] },
     {
@@ -684,57 +684,59 @@
     if (existing) existing.remove();
 
     const cancellationUrl = getCancellationUrl(booking);
-    const whatsappUrl = getWhatsappUrl(booking);
     const overlay = document.createElement("div");
     overlay.className = "booking-confirmation-cinema";
     overlay.dataset.bookingConfirmation = "true";
     overlay.innerHTML = `
       <div class="booking-confirmation-cinema__particles" aria-hidden="true">
-        ${Array.from({ length: 18 }, (_, index) => `<span style="--particle-index:${index}; --particle-x:${8 + Math.random() * 84}%; --particle-y:${12 + Math.random() * 76}%; --particle-delay:${Math.random() * 1.4}s"></span>`).join("")}
+        ${Array.from({ length: 10 }, (_, index) => `<span style="--particle-index:${index}; --particle-x:${8 + Math.random() * 84}%; --particle-y:${12 + Math.random() * 76}%; --particle-delay:${Math.random() * 1.4}s"></span>`).join("")}
       </div>
       <article class="booking-confirmation-card" role="dialog" aria-modal="true" aria-labelledby="booking-confirmation-title">
         <span class="booking-confirmation-card__beam" aria-hidden="true"></span>
-        <div class="booking-confirmation-card__mark" aria-hidden="true">
-          <span class="booking-confirmation-card__check">&#10003;</span>
-          <span class="booking-confirmation-card__logo">IB</span>
-        </div>
+        <img class="booking-confirmation-card__logo-img" src="assets/img/logotipo-in.png" alt="Invictus Barber Studio" />
         <p class="booking-confirmation-card__eyebrow">Reserva premium concluida</p>
         <h2 id="booking-confirmation-title">AGENDAMENTO CONFIRMADO</h2>
         <p class="booking-confirmation-card__message">
           Seu horario foi reservado com sucesso.<br />
-          A Invictus te espera para uma experiencia pensada nos detalhes.<br />
-          Chegue no horario, venha tranquilo e prepare-se para sair com presenca.
+          A Invictus te espera para um atendimento pensado nos detalhes.<br />
+          Chegue tranquilo. Vai ser um prazer receber voce.
         </p>
-        <dl class="booking-confirmation-card__details">
-          <div>
-            <dt>Servico</dt>
-            <dd>${escapeHtml(booking.service)}</dd>
-          </div>
-          <div>
-            <dt>Barbeiro</dt>
-            <dd>${escapeHtml(booking.barber)}</dd>
-          </div>
-          <div>
-            <dt>Data</dt>
-            <dd>${formatDate(booking.date)}</dd>
-          </div>
-          <div>
-            <dt>Horario</dt>
-            <dd>${escapeHtml(booking.time)}</dd>
-          </div>
-        </dl>
+        <section class="booking-confirmation-card__summary" aria-label="Resumo da reserva">
+          <h3>Resumo da reserva</h3>
+          <dl class="booking-confirmation-card__details">
+            <div>
+              <dt>Servico</dt>
+              <dd>${escapeHtml(booking.service)}</dd>
+            </div>
+            <div>
+              <dt>Barbeiro</dt>
+              <dd>${escapeHtml(booking.barber)}</dd>
+            </div>
+            <div>
+              <dt>Data</dt>
+              <dd>${formatDate(booking.date)}</dd>
+            </div>
+            <div>
+              <dt>Horario</dt>
+              <dd>${escapeHtml(booking.time)}</dd>
+            </div>
+          </dl>
+        </section>
         ${cancellationUrl ? `<p class="booking-confirmation-card__cancel-note">Guarde este link caso precise cancelar seu horário.</p>` : ""}
         <div class="booking-confirmation-card__actions">
-          <a class="booking-confirmation-card__button" href="meus-agendamentos.html">
-            Ver meus agendamentos
+          <a class="booking-confirmation-card__button" href="#inicio" data-confirmation-home>
+            Voltar ao inicio
           </a>
-          ${whatsappUrl ? `<a class="booking-confirmation-card__button booking-confirmation-card__button--whatsapp" href="${escapeHtml(whatsappUrl)}" target="_blank" rel="noopener">Chamar no WhatsApp</a>` : ""}
+          <a class="booking-confirmation-card__button booking-confirmation-card__button--secondary" href="meus-agendamentos.html">
+            Meus agendamentos
+          </a>
         </div>
       </article>
     `;
 
     const card = overlay.querySelector(".booking-confirmation-card");
     let frame = null;
+    const useSimpleConfirmationMotion = window.matchMedia("(prefers-reduced-motion: reduce), (hover: none), (pointer: coarse), (max-width: 768px)").matches;
 
     function updateParallax(event) {
       if (frame) cancelAnimationFrame(frame);
@@ -757,13 +759,15 @@
       }, 680);
     }
 
-    overlay.addEventListener("pointermove", updateParallax);
-    overlay.addEventListener("pointerleave", () => {
-      card.style.removeProperty("--confirmation-x");
-      card.style.removeProperty("--confirmation-y");
-      card.style.removeProperty("--confirmation-tilt-x");
-      card.style.removeProperty("--confirmation-tilt-y");
-    });
+    if (!useSimpleConfirmationMotion) {
+      overlay.addEventListener("pointermove", updateParallax);
+      overlay.addEventListener("pointerleave", () => {
+        card.style.removeProperty("--confirmation-x");
+        card.style.removeProperty("--confirmation-y");
+        card.style.removeProperty("--confirmation-tilt-x");
+        card.style.removeProperty("--confirmation-tilt-y");
+      });
+    }
 
     overlay.querySelectorAll(".booking-confirmation-card__button").forEach((button) => {
       button.addEventListener("click", () => {
@@ -787,7 +791,8 @@
 
   function setupPremiumBookingInteractions(app) {
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (reduceMotion) return;
+    const useSimpleMobileMotion = window.matchMedia("(hover: none), (pointer: coarse), (max-width: 768px)").matches;
+    if (reduceMotion || useSimpleMobileMotion) return;
 
     const interactiveSelector = [
       ".barber-select",
