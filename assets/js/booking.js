@@ -312,11 +312,11 @@
   }
 
   function sanitizePhone(value) {
-    return value.replace(/\D/g, "").slice(0, 11);
+    return String(value || "").replace(/\D/g, "").slice(0, 11);
   }
 
   function normalizeText(value) {
-    return value.trim().toLowerCase();
+    return String(value || "").trim().toLowerCase();
   }
 
   function bookingId() {
@@ -417,7 +417,9 @@
       const active = state.service === service.name ? " is-selected" : "";
       return `<button class="cinema-service${active}" type="button" data-service="${service.name}" style="--item-index:${index}">
         <img src="${service.image}" alt="" loading="lazy" />
-        <span class="cinema-service__icon">IB</span>
+        <span class="cinema-service__icon" aria-hidden="true">
+          <img src="assets/img/logotipo-in.png" alt="" loading="lazy" />
+        </span>
         <span class="cinema-service__name text-3d gold-depth">${service.name}</span>
         <span class="cinema-service__meta">${service.price} · ${service.duration}</span>
         <small>${service.description}</small>
@@ -601,13 +603,18 @@
     const barberId = getBarberIdByName(data.barber);
 
     return state.bookings.some((booking) => {
-      const sameEmail = email !== "nao informado" && normalizeText(booking.clientEmail) === email;
+      const bookingPhone = sanitizePhone(booking.clientWhatsapp);
+      const bookingEmail = normalizeText(booking.clientEmail);
+      if (!bookingPhone && !bookingEmail) return false;
+
+      const samePhone = Boolean(phone && bookingPhone && bookingPhone === phone);
+      const sameEmail = Boolean(email && email !== "nao informado" && bookingEmail && bookingEmail === email);
       return (
         booking.status === "confirmed" &&
         booking.date === data.date &&
         booking.time === data.time &&
         booking.barberId === barberId &&
-        (sanitizePhone(booking.clientWhatsapp) === phone || sameEmail)
+        (samePhone || sameEmail)
       );
     });
   }
@@ -620,7 +627,8 @@
       `Barbeiro: ${booking.barber}`,
       `Data: ${formatDate(booking.date)}`,
       `Horário: ${booking.time}`,
-      cancellationUrl ? `Cancelar agendamento: ${cancellationUrl}` : ""
+      cancellationUrl ? `Se precisar cancelar, acesse este link: ${cancellationUrl}` : "",
+      cancellationUrl ? "Guarde esta mensagem para consultar ou cancelar seu agendamento depois." : ""
     ].filter(Boolean).join("\n");
 
     return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
@@ -645,6 +653,24 @@
         "'": "&#039;"
       }[char];
     });
+  }
+
+  async function copyTextToClipboard(text) {
+    if (navigator.clipboard && window.isSecureContext) {
+      await navigator.clipboard.writeText(text);
+      return;
+    }
+
+    const textarea = document.createElement("textarea");
+    textarea.value = text;
+    textarea.setAttribute("readonly", "");
+    textarea.style.position = "fixed";
+    textarea.style.opacity = "0";
+    textarea.style.pointerEvents = "none";
+    document.body.appendChild(textarea);
+    textarea.select();
+    document.execCommand("copy");
+    textarea.remove();
   }
 
   function playConfirmationTone() {
@@ -684,6 +710,8 @@
     if (existing) existing.remove();
 
     const cancellationUrl = getCancellationUrl(booking);
+    const compactSummary = `${escapeHtml(booking.barber)} &bull; ${formatDate(booking.date)} &bull; ${escapeHtml(booking.time)}`;
+    const summaryOpenAttribute = window.matchMedia("(min-width: 769px)").matches ? " open" : "";
     const overlay = document.createElement("div");
     overlay.className = "booking-confirmation-cinema";
     overlay.dataset.bookingConfirmation = "true";
@@ -693,7 +721,7 @@
       </div>
       <article class="booking-confirmation-card" role="dialog" aria-modal="true" aria-labelledby="booking-confirmation-title">
         <span class="booking-confirmation-card__beam" aria-hidden="true"></span>
-        <img class="booking-confirmation-card__logo-img" src="assets/img/invictus-logo.png" alt="Invictus Barber Studio" />
+        <img class="booking-confirmation-card__logo-img" src="assets/img/logotipo-in.png" alt="Invictus Barber Studio" />
         <p class="booking-confirmation-card__eyebrow">Reserva premium concluida</p>
         <h2 id="booking-confirmation-title">AGENDAMENTO CONFIRMADO</h2>
         <p class="booking-confirmation-card__message">
@@ -701,8 +729,14 @@
           A Invictus te espera para um atendimento feito com cuidado, presen&ccedil;a e aten&ccedil;&atilde;o aos detalhes.<br />
           Chegue tranquilo &mdash; vai ser um prazer receber voc&ecirc;.
         </p>
-        <section class="booking-confirmation-card__summary" aria-label="Resumo da reserva">
-          <h3>Resumo da reserva</h3>
+        <details class="booking-confirmation-card__summary" aria-label="Resumo da reserva"${summaryOpenAttribute}>
+          <summary class="booking-confirmation-card__summary-toggle">
+            <span>
+              <strong data-summary-toggle-label>${summaryOpenAttribute ? "Ocultar detalhes" : "Ver detalhes da reserva"}</strong>
+              <small>${compactSummary}</small>
+            </span>
+            <span class="booking-confirmation-card__summary-icon" aria-hidden="true"></span>
+          </summary>
           <dl class="booking-confirmation-card__details">
             <div>
               <dt>Servico</dt>
@@ -721,20 +755,29 @@
               <dd>${escapeHtml(booking.time)}</dd>
             </div>
           </dl>
-        </section>
-        ${cancellationUrl ? `<p class="booking-confirmation-card__cancel-note">Guarde este link caso precise cancelar seu horário.</p>` : ""}
+        </details>
+        ${cancellationUrl ? `<div class="booking-confirmation-warning" role="note">
+          <strong class="booking-confirmation-warning-title">IMPORTANTE</strong>
+          <p class="booking-confirmation-warning-text">Guarde seu link de cancelamento. Voc&ecirc; vai precisar dele caso queira consultar ou cancelar este agendamento depois.</p>
+        </div>` : ""}
         <div class="booking-confirmation-card__actions">
+          ${cancellationUrl ? `<button class="booking-confirmation-card__button booking-confirmation-card__button--secondary" type="button" data-copy-cancellation-link data-cancellation-url="${escapeHtml(cancellationUrl)}">
+            COPIAR LINK DE CANCELAMENTO
+          </button>` : ""}
+          ${cancellationUrl ? `<a class="booking-confirmation-card__button booking-confirmation-card__button--cancel" href="${escapeHtml(cancellationUrl)}">
+            CANCELAR ESTE AGENDAMENTO
+          </a>` : ""}
           <a class="booking-confirmation-card__button" href="#inicio" data-confirmation-home>
             VOLTAR AO IN&Iacute;CIO
           </a>
-          <a class="booking-confirmation-card__button booking-confirmation-card__button--secondary" href="meus-agendamentos.html">
-            MEUS AGENDAMENTOS
-          </a>
         </div>
+        ${cancellationUrl ? `<p class="booking-confirmation-copy-feedback" data-copy-cancellation-feedback hidden>Link copiado com sucesso!</p>` : ""}
       </article>
     `;
 
     const card = overlay.querySelector(".booking-confirmation-card");
+    const summaryDetails = overlay.querySelector(".booking-confirmation-card__summary");
+    const summaryToggleLabel = overlay.querySelector("[data-summary-toggle-label]");
     let frame = null;
     const useSimpleConfirmationMotion = window.matchMedia("(prefers-reduced-motion: reduce), (hover: none), (pointer: coarse), (max-width: 768px)").matches;
 
@@ -769,8 +812,34 @@
       });
     }
 
+    if (summaryDetails && summaryToggleLabel) {
+      summaryDetails.addEventListener("toggle", () => {
+        summaryToggleLabel.textContent = summaryDetails.open ? "Ocultar detalhes" : "Ver detalhes da reserva";
+      });
+    }
+
+    const copyButton = overlay.querySelector("[data-copy-cancellation-link]");
+    const copyFeedback = overlay.querySelector("[data-copy-cancellation-feedback]");
+    if (copyButton) {
+      copyButton.addEventListener("click", async () => {
+        try {
+          await copyTextToClipboard(copyButton.dataset.cancellationUrl || "");
+          if (copyFeedback) {
+            copyFeedback.hidden = false;
+            copyFeedback.textContent = "Link copiado com sucesso!";
+          }
+        } catch (error) {
+          if (copyFeedback) {
+            copyFeedback.hidden = false;
+            copyFeedback.textContent = "Nao foi possivel copiar agora. Toque em cancelar e salve o link.";
+          }
+        }
+      });
+    }
+
     overlay.querySelectorAll(".booking-confirmation-card__button").forEach((button) => {
       button.addEventListener("click", () => {
+        if (button.matches("[data-copy-cancellation-link]")) return;
         if (button.target === "_blank") return;
         closeConfirmation();
       });

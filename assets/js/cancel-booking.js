@@ -130,17 +130,9 @@ async function loadCancellation() {
   }
 
   bookingRef = firestoreModule.doc(db, BOOKINGS_COLLECTION, tokenData.bookingId);
-  const bookingSnapshot = await firestoreModule.getDoc(bookingRef);
-
-  if (!bookingSnapshot.exists()) {
-    copy.textContent = "Link inválido ou expirado.";
-    setStatus("Agendamento nao encontrado.", "error");
-    return;
-  }
-
   bookingData = normalizeBooking({
-    id: bookingSnapshot.id,
-    ...bookingSnapshot.data()
+    id: tokenData.bookingId,
+    ...tokenData
   });
 
   renderBooking(bookingData);
@@ -178,32 +170,6 @@ async function cancelBooking() {
   confirmButton.setAttribute("aria-busy", "true");
   setStatus("Cancelando agendamento...", "info");
 
-  const freshBookingSnapshot = await firestoreModule.getDoc(bookingRef);
-  if (!freshBookingSnapshot.exists()) {
-    stopCancelLoading();
-    setStatus("Agendamento nao encontrado.", "error");
-    return;
-  }
-
-  const freshBooking = normalizeBooking({
-    id: freshBookingSnapshot.id,
-    ...freshBookingSnapshot.data()
-  });
-
-  if (freshBooking.status === "completed") {
-    confirmButton.textContent = "Cancelar agendamento";
-    confirmButton.removeAttribute("aria-busy");
-    setStatus("Este atendimento ja foi concluido e nao pode ser cancelado.", "error");
-    return;
-  }
-
-  if (freshBooking.status === "cancelled") {
-    confirmButton.textContent = "Cancelar agendamento";
-    confirmButton.removeAttribute("aria-busy");
-    setStatus("Este agendamento ja estava cancelado.", "success");
-    return;
-  }
-
   const batch = firestoreModule.writeBatch(db);
   const now = new Date().toISOString();
 
@@ -211,12 +177,19 @@ async function cancelBooking() {
     status: "cancelled",
     cancelledAt: now,
     cancellationSource: "client",
+    cancelTokenProof: tokenId,
     updatedAt: now
   });
 
-  slotLockIds(freshBooking).forEach((lockId) => {
+  slotLockIds(bookingData).forEach((lockId) => {
     const lockRef = firestoreModule.doc(db, BOOKING_LOCKS_COLLECTION, lockId);
-    batch.delete(lockRef);
+    batch.update(lockRef, {
+      status: "cancelled",
+      cancelledAt: now,
+      cancellationSource: "client",
+      cancelTokenProof: tokenId,
+      updatedAt: now
+    });
   });
 
   batch.update(tokenRef, {

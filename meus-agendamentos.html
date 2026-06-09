@@ -51,7 +51,7 @@
         background: linear-gradient(160deg, var(--panel), var(--panel-strong));
         box-shadow: 0 30px 90px rgba(0, 0, 0, 0.48);
         backdrop-filter: blur(18px);
-        padding: 30px;
+        padding: clamp(24px, 4vw, 34px);
       }
 
       .brand {
@@ -74,6 +74,18 @@
         font-family: Oswald, sans-serif;
         font-size: 22px;
         font-weight: 700;
+      }
+
+      .brand__mark--image {
+        border: 0;
+        background: transparent;
+      }
+
+      .brand__mark-img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        filter: drop-shadow(0 10px 18px rgba(0, 0, 0, 0.72)) drop-shadow(0 0 12px rgba(215, 180, 106, 0.22));
       }
 
       .brand strong,
@@ -99,6 +111,15 @@
         margin: 0 0 10px;
         font-size: clamp(36px, 8vw, 64px);
         line-height: 0.96;
+      }
+
+      .page-intro {
+        max-width: 620px;
+        margin: 0;
+        color: var(--gold);
+        font-size: clamp(0.95rem, 2vw, 1.06rem);
+        font-weight: 800;
+        line-height: 1.55;
       }
 
       form {
@@ -287,12 +308,55 @@
 
       .empty-state {
         display: grid;
-        gap: 14px;
+        gap: 16px;
         align-items: start;
-        padding: 22px;
+        padding: clamp(20px, 4vw, 28px);
         border: 1px solid var(--line);
         color: var(--muted);
-        background: rgba(0, 0, 0, 0.18);
+        background:
+          linear-gradient(145deg, rgba(215, 180, 106, 0.08), rgba(0, 0, 0, 0.26)),
+          rgba(0, 0, 0, 0.18);
+        box-shadow:
+          inset 0 0 0 1px rgba(255, 255, 255, 0.025),
+          0 18px 42px rgba(0, 0, 0, 0.2);
+      }
+
+      .empty-state strong {
+        color: var(--text);
+        font-family: Oswald, sans-serif;
+        font-size: clamp(1.35rem, 4.8vw, 2rem);
+        line-height: 1;
+        text-transform: uppercase;
+      }
+
+      .empty-state span {
+        max-width: 620px;
+        font-size: 0.94rem;
+        line-height: 1.55;
+      }
+
+      .confirmation-access-form {
+        width: 100%;
+        grid-template-columns: minmax(0, 1fr) auto;
+        margin: 8px 0 0;
+        align-items: end;
+      }
+
+      .confirmation-access-form label {
+        min-width: 0;
+      }
+
+      .confirmation-access-form input {
+        box-sizing: border-box;
+        min-height: 52px;
+        min-width: 0;
+        font-size: 16px;
+        text-overflow: ellipsis;
+      }
+
+      .confirmation-access-form button {
+        min-height: 52px;
+        white-space: nowrap;
       }
 
       .status-badge {
@@ -347,12 +411,56 @@
       }
 
       .top-actions {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, max-content));
+        gap: 12px;
         margin-top: 18px;
       }
 
       @media (max-width: 760px) {
+        body {
+          padding: 14px;
+        }
+
+        .bookings-shell {
+          padding: 16px 0;
+        }
+
+        .panel {
+          padding: clamp(20px, 6vw, 26px);
+        }
+
+        .brand {
+          margin-bottom: 24px;
+        }
+
+        h1 {
+          font-size: clamp(2.15rem, 12vw, 3.2rem);
+        }
+
         form {
           grid-template-columns: 1fr;
+        }
+
+        .confirmation-access-form {
+          margin-top: 8px;
+          grid-template-columns: 1fr;
+        }
+
+        .empty-state {
+          gap: 14px;
+          padding: 20px;
+        }
+
+        .confirmation-access-form input {
+          font-size: 15px;
+          min-height: 50px;
+          padding-inline: 14px;
+        }
+
+        .confirmation-access-form button {
+          width: 100%;
+          min-height: 50px;
         }
 
         .booking-card {
@@ -376,6 +484,10 @@
           width: 100%;
           text-align: center;
         }
+
+        .top-actions {
+          grid-template-columns: 1fr;
+        }
       }
     </style>
   </head>
@@ -383,28 +495,23 @@
     <main class="bookings-shell">
       <section class="panel">
         <a class="brand" href="index.html" aria-label="Invictus Barber">
-          <span class="brand__mark">IB</span>
+          <span class="brand__mark brand__mark--image" aria-hidden="true">
+            <img class="brand__mark-img" src="assets/img/logotipo-in.png" alt="" />
+          </span>
           <span>
             <strong>Invictus</strong>
             <small>Barber Studio</small>
           </span>
         </a>
 
-        <h1>Meus agendamentos</h1>
-        <p>Consulte, acompanhe ou cancele seus horários agendados.</p>
-
-        <form data-my-bookings-form novalidate>
-          <label>
-            WhatsApp
-            <input name="clientWhatsapp" type="tel" placeholder="(67) 98209-4572" autocomplete="tel" inputmode="tel" required />
-          </label>
-          <button type="submit" data-my-bookings-submit>Buscar</button>
-        </form>
+        <h1>MEUS AGENDAMENTOS</h1>
+        <p class="page-intro">Use o link da sua reserva para consultar ou cancelar.</p>
 
         <div data-my-bookings-status role="status" aria-live="polite"></div>
         <div class="booking-list" data-my-bookings-list></div>
 
         <div class="top-actions">
+          <a class="home-link" href="#" target="_blank" rel="noreferrer" data-my-bookings-whatsapp>Falar com a Invictus no WhatsApp</a>
           <a class="home-link" href="index.html#agenda">Voltar para agenda</a>
         </div>
       </section>

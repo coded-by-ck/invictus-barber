@@ -73,6 +73,30 @@
     return ids;
   }
 
+  function lockTimeFromId(lockId) {
+    const parts = String(lockId || "").split("_");
+    const safeTime = parts[2] || "";
+    const [hour, minute] = safeTime.split("-");
+    if (!hour || !minute) return "";
+    return `${hour}:${minute}`;
+  }
+
+  function lockToBooking(lockDoc) {
+    const data = lockDoc.data();
+    const time = data.time || lockTimeFromId(lockDoc.id);
+    return normalizeBooking({
+      id: data.bookingId || lockDoc.id,
+      barberId: data.barberId,
+      barber: data.barberId,
+      barberName: data.barberId,
+      date: data.date,
+      time,
+      duration: SLOT_INTERVAL_MINUTES,
+      endTime: time ? minutesToTime(timeToMinutes(time) + SLOT_INTERVAL_MINUTES) : "",
+      status: data.status || "confirmed"
+    });
+  }
+
   function createSlotTakenError() {
     const error = new Error("Esse horario ja esta reservado.");
     error.code = "slot-taken";
@@ -172,6 +196,15 @@
       if (!db) throw new Error("Firestore nao esta disponivel.");
 
       const { collection, getDocs, query, where } = window.InvictusFirebase.modules;
+
+      if (filters.barberId && filters.date) {
+        return this.listBookingLocks({
+          barberId: filters.barberId,
+          date: filters.date,
+          status: filters.status || "confirmed"
+        });
+      }
+
       const constraints = [];
 
       // Sincronizacao dos horarios: usa um filtro simples no Firestore e refina
@@ -195,6 +228,23 @@
       return filterBookings(bookings, filters);
     },
 
+    async listBookingLocks(filters = {}) {
+      const db = await this.getDb();
+      if (!db) throw new Error("Firestore nao esta disponivel.");
+
+      const { collection, getDocs, query, where } = window.InvictusFirebase.modules;
+      const constraints = [];
+
+      if (filters.barberId) constraints.push(where("barberId", "==", filters.barberId));
+      if (filters.date) constraints.push(where("date", "==", filters.date));
+
+      const locksRef = collection(db, BOOKING_LOCKS_COLLECTION);
+      const snapshot = await getDocs(constraints.length ? query(locksRef, ...constraints) : locksRef);
+      const locks = snapshot.docs.map(lockToBooking);
+
+      return filterBookings(locks, filters);
+    },
+
     async saveBooking(booking) {
       const db = await this.getDb();
       if (!db) throw new Error("Firestore nao esta disponivel.");
@@ -213,13 +263,13 @@
         id: documentId
       };
 
-      const currentBookings = await this.listBookings({
+      const currentLocks = await this.listBookingLocks({
         barberId: normalized.barberId,
         date: normalized.date,
         status: "confirmed"
       });
 
-      if (currentBookings.some((item) => isConfirmedSlotMatch(item, normalized))) {
+      if (currentLocks.some((item) => isConfirmedSlotMatch(item, normalized))) {
         throw createSlotTakenError();
       }
 
@@ -228,7 +278,7 @@
       await runTransaction(db, async (transaction) => {
         const existingLocks = await Promise.all(lockRefs.map((lockRef) => transaction.get(lockRef)));
         const existingToken = tokenRef ? await transaction.get(tokenRef) : null;
-        if (existingLocks.some((lock) => lock.exists())) {
+        if (existingLocks.some((lock) => lock.exists() && lock.data().status === "confirmed")) {
           throw createSlotTakenError();
         }
         if (existingToken && existingToken.exists()) {
@@ -236,10 +286,12 @@
         }
 
         lockRefs.forEach((lockRef) => {
+          const time = lockTimeFromId(lockRef.id);
           transaction.set(lockRef, {
             bookingId: documentId,
             barberId: normalized.barberId,
             date: normalized.date,
+            time,
             status: normalized.status,
             createdAt: normalized.createdAt
           });
@@ -249,8 +301,13 @@
             token: cancelTokenId,
             bookingId: documentId,
             barberId: normalized.barberId,
+            barberName: normalized.barberName,
+            barber: normalized.barber,
+            service: normalized.service,
             date: normalized.date,
             time: normalized.time,
+            duration: normalized.duration,
+            endTime: normalized.endTime,
             status: "active",
             createdAt: normalized.cancelTokenCreatedAt || normalized.createdAt
           });

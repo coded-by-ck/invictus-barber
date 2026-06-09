@@ -1,0 +1,251 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function userExists() {
+      return signedIn() &&
+        exists(/databases/$(database)/documents/users/$(request.auth.uid));
+    }
+
+    function userProfile() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid));
+    }
+
+    function isAdmin() {
+      return userExists() && userProfile().data.role == "admin";
+    }
+
+    function isBarber() {
+      return userExists() && userProfile().data.role == "barber";
+    }
+
+    function currentBarberId() {
+      return userProfile().data.barberId;
+    }
+
+    function isAllowedBarber(barberId) {
+      return isBarber() && currentBarberId() == barberId;
+    }
+
+    function isStringField(data, field) {
+      return data[field] is string && data[field].size() > 0;
+    }
+
+    function validBookingCreate(bookingId) {
+      return request.auth == null &&
+        request.resource.data.keys().hasOnly([
+          "id",
+          "service",
+          "servicePrice",
+          "servicePriceLabel",
+          "serviceSnapshot",
+          "barber",
+          "barberId",
+          "barberName",
+          "clientName",
+          "clientWhatsapp",
+          "clientEmail",
+          "date",
+          "time",
+          "duration",
+          "endTime",
+          "status",
+          "createdAt",
+          "cancelTokenId",
+          "cancelTokenCreatedAt"
+        ]) &&
+        request.resource.data.keys().hasAll([
+          "id",
+          "service",
+          "barberId",
+          "barberName",
+          "clientName",
+          "clientWhatsapp",
+          "date",
+          "time",
+          "duration",
+          "endTime",
+          "status",
+          "createdAt",
+          "cancelTokenId"
+        ]) &&
+        request.resource.data.status == "confirmed" &&
+        request.resource.data.id == bookingId &&
+        isStringField(request.resource.data, "service") &&
+        isStringField(request.resource.data, "barberId") &&
+        isStringField(request.resource.data, "barberName") &&
+        isStringField(request.resource.data, "clientName") &&
+        isStringField(request.resource.data, "clientWhatsapp") &&
+        isStringField(request.resource.data, "date") &&
+        isStringField(request.resource.data, "time") &&
+        isStringField(request.resource.data, "endTime") &&
+        isStringField(request.resource.data, "createdAt") &&
+        isStringField(request.resource.data, "cancelTokenId") &&
+        request.resource.data.duration is number;
+    }
+
+    function validLockCreate() {
+      return request.auth == null &&
+        request.resource.data.keys().hasOnly([
+          "bookingId",
+          "barberId",
+          "date",
+          "time",
+          "status",
+          "createdAt"
+        ]) &&
+        request.resource.data.keys().hasAll([
+          "bookingId",
+          "barberId",
+          "date",
+          "time",
+          "status",
+          "createdAt"
+        ]) &&
+        request.resource.data.status == "confirmed" &&
+        isStringField(request.resource.data, "bookingId") &&
+        isStringField(request.resource.data, "barberId") &&
+        isStringField(request.resource.data, "date") &&
+        isStringField(request.resource.data, "time") &&
+        isStringField(request.resource.data, "createdAt");
+    }
+
+    function validTokenCreate(tokenId) {
+      return request.auth == null &&
+        request.resource.data.keys().hasOnly([
+          "token",
+          "bookingId",
+          "barberId",
+          "barberName",
+          "barber",
+          "service",
+          "date",
+          "time",
+          "duration",
+          "endTime",
+          "status",
+          "createdAt"
+        ]) &&
+        request.resource.data.keys().hasAll([
+          "token",
+          "bookingId",
+          "barberId",
+          "date",
+          "time",
+          "status",
+          "createdAt"
+        ]) &&
+        request.resource.data.token == tokenId &&
+        request.resource.data.status == "active" &&
+        isStringField(request.resource.data, "bookingId") &&
+        isStringField(request.resource.data, "barberId") &&
+        isStringField(request.resource.data, "date") &&
+        isStringField(request.resource.data, "time") &&
+        isStringField(request.resource.data, "createdAt") &&
+        request.resource.data.duration is number;
+    }
+
+    function tokenActiveForBooking(tokenId, bookingId) {
+      return tokenId is string &&
+        exists(/databases/$(database)/documents/cancellationTokens/$(tokenId)) &&
+        get(/databases/$(database)/documents/cancellationTokens/$(tokenId)).data.bookingId == bookingId &&
+        get(/databases/$(database)/documents/cancellationTokens/$(tokenId)).data.status == "active";
+    }
+
+    function hasValidCancelProof(bookingId) {
+      return request.resource.data.cancelTokenProof is string &&
+        request.resource.data.cancelTokenProof == resource.data.cancelTokenId &&
+        tokenActiveForBooking(request.resource.data.cancelTokenProof, bookingId);
+    }
+
+    function canClientCancelBooking(bookingId) {
+      return request.auth == null &&
+        resource.data.status == "confirmed" &&
+        request.resource.data.status == "cancelled" &&
+        request.resource.data.cancellationSource == "client" &&
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+          "status",
+          "cancelledAt",
+          "cancellationSource",
+          "cancelTokenProof",
+          "updatedAt"
+        ]) &&
+        hasValidCancelProof(bookingId);
+    }
+
+    function canClientCancelLock() {
+      return request.auth == null &&
+        resource.data.status == "confirmed" &&
+        request.resource.data.status == "cancelled" &&
+        request.resource.data.cancellationSource == "client" &&
+        request.resource.data.cancelTokenProof is string &&
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+          "status",
+          "cancelledAt",
+          "cancellationSource",
+          "cancelTokenProof",
+          "updatedAt"
+        ]) &&
+        exists(/databases/$(database)/documents/bookings/$(resource.data.bookingId)) &&
+        get(/databases/$(database)/documents/bookings/$(resource.data.bookingId)).data.cancelTokenId == request.resource.data.cancelTokenProof &&
+        tokenActiveForBooking(request.resource.data.cancelTokenProof, resource.data.bookingId);
+    }
+
+    function validTokenUse(tokenId) {
+      return request.auth == null &&
+        resource.data.status == "active" &&
+        resource.data.token == tokenId &&
+        request.resource.data.status == "used" &&
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+          "status",
+          "usedAt"
+        ]);
+    }
+
+    match /users/{uid} {
+      allow read: if signedIn() && (request.auth.uid == uid || isAdmin());
+      allow create, update, delete: if isAdmin();
+    }
+
+    match /bookings/{bookingId} {
+      allow create: if validBookingCreate(bookingId);
+
+      allow get: if isAdmin() ||
+        isAllowedBarber(resource.data.barberId);
+
+      allow list: if isAdmin() ||
+        (isBarber() && resource.data.barberId == currentBarberId());
+
+      allow update: if isAdmin() ||
+        isAllowedBarber(resource.data.barberId) ||
+        canClientCancelBooking(bookingId);
+
+      allow delete: if false;
+    }
+
+    match /bookingLocks/{lockId} {
+      allow get, list: if true;
+      allow create: if validLockCreate();
+      allow update: if isAdmin() ||
+        isAllowedBarber(resource.data.barberId) ||
+        canClientCancelLock();
+      allow delete: if isAdmin() || isAllowedBarber(resource.data.barberId);
+    }
+
+    match /cancellationTokens/{tokenId} {
+      allow get: if true;
+      allow list: if false;
+      allow create: if validTokenCreate(tokenId);
+      allow update: if validTokenUse(tokenId);
+      allow delete: if false;
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
