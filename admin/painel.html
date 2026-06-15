@@ -116,6 +116,31 @@
         cursor: pointer;
       }
 
+      .admin-actions {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+      }
+
+      .notification-toggle {
+        border: 1px solid rgba(215, 180, 106, 0.32);
+        background: rgba(215, 180, 106, 0.08);
+        color: var(--text);
+        padding: 12px 14px;
+        font: inherit;
+        font-weight: 800;
+        cursor: pointer;
+      }
+
+      .notification-toggle:hover,
+      .notification-toggle:focus-visible {
+        border-color: rgba(215, 180, 106, 0.62);
+        color: var(--gold);
+        outline: none;
+      }
+
       .hero-panel {
         display: grid;
         gap: 10px;
@@ -263,7 +288,10 @@
             <small>Barber Studio</small>
           </span>
         </a>
-        <button class="logout" type="button" data-admin-logout>Sair</button>
+        <div class="admin-actions">
+          <button class="notification-toggle" type="button" data-enable-notifications>Ativar notificações</button>
+          <button class="logout" type="button" data-admin-logout>Sair</button>
+        </div>
       </header>
 
       <section class="hero-panel">
@@ -296,6 +324,7 @@
       </section>
     </main>
 
+    <script type="module" src="../assets/js/notifications.js"></script>
     <script type="module" src="../assets/js/admin-panel.js"></script>
   </body>
 </html>

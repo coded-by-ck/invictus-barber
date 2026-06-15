@@ -771,6 +771,11 @@
             VOLTAR AO IN&Iacute;CIO
           </a>
         </div>
+        ${booking.cancelTokenId ? `<div class="booking-reminder-optin" data-reminder-optin>
+          <span>Deseja receber lembrete do seu hor&aacute;rio?</span>
+          <button class="booking-reminder-button" type="button" data-enable-client-reminder>Ativar lembrete</button>
+        </div>
+        <p class="booking-confirmation-copy-feedback" data-reminder-feedback hidden></p>` : ""}
         ${cancellationUrl ? `<p class="booking-confirmation-copy-feedback" data-copy-cancellation-feedback hidden>Link copiado com sucesso!</p>` : ""}
       </article>
     `;
@@ -820,6 +825,8 @@
 
     const copyButton = overlay.querySelector("[data-copy-cancellation-link]");
     const copyFeedback = overlay.querySelector("[data-copy-cancellation-feedback]");
+    const reminderButton = overlay.querySelector("[data-enable-client-reminder]");
+    const reminderFeedback = overlay.querySelector("[data-reminder-feedback]");
     if (copyButton) {
       copyButton.addEventListener("click", async () => {
         try {
@@ -832,6 +839,48 @@
           if (copyFeedback) {
             copyFeedback.hidden = false;
             copyFeedback.textContent = "Nao foi possivel copiar agora. Toque em cancelar e salve o link.";
+          }
+        }
+      });
+    }
+
+    if (reminderButton) {
+      reminderButton.addEventListener("click", async () => {
+        if (!window.InvictusNotifications) {
+          if (reminderFeedback) {
+            reminderFeedback.hidden = false;
+            reminderFeedback.textContent = "Lembretes indisponiveis neste navegador agora.";
+          }
+          return;
+        }
+
+        reminderButton.disabled = true;
+        reminderButton.textContent = "Ativando...";
+
+        try {
+          const support = window.InvictusNotifications.supportStatus();
+          if (!support.supported) {
+            throw new Error(support.reason);
+          }
+
+          await window.InvictusNotifications.enable({
+            userType: "client",
+            bookingId: booking.id,
+            cancelTokenId: booking.cancelTokenId
+          });
+
+          reminderButton.textContent = "Lembrete ativo";
+          if (reminderFeedback) {
+            reminderFeedback.hidden = false;
+            reminderFeedback.textContent = "Pronto. Este navegador recebera o lembrete 30 minutos antes.";
+          }
+        } catch (error) {
+          console.warn("Falha ao ativar lembrete.", error);
+          reminderButton.disabled = false;
+          reminderButton.textContent = "Ativar lembrete";
+          if (reminderFeedback) {
+            reminderFeedback.hidden = false;
+            reminderFeedback.textContent = error && error.message ? error.message : "Nao foi possivel ativar o lembrete.";
           }
         }
       });

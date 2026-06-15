@@ -63,10 +63,12 @@ const status = document.querySelector("[data-master-status]");
 const list = document.querySelector("[data-master-bookings]");
 const kicker = document.querySelector("[data-master-kicker]");
 const logoutButton = document.querySelector("[data-master-logout]");
+const notificationButton = document.querySelector("[data-enable-notifications]");
 const filtersForm = document.querySelector("[data-master-filters]");
 
 let unsubscribeBookings = null;
 let allBookings = [];
+let currentProfile = null;
 const servicePriceMap = new Map(SERVICE_PRICES.map(([name, price]) => [normalizeServiceName(name), price]));
 
 function normalizeServiceName(value) {
@@ -221,6 +223,45 @@ function getStatusMeta(statusValue) {
 
 function setStatus(message) {
   status.textContent = message;
+}
+
+function setNotificationLoading(isLoading) {
+  if (!notificationButton) return;
+  notificationButton.disabled = isLoading;
+  notificationButton.textContent = isLoading ? "Ativando..." : "Ativar notificações";
+}
+
+async function enablePanelNotifications() {
+  if (!currentProfile || !window.InvictusNotifications) return;
+
+  setNotificationLoading(true);
+  setStatus("Ativando notificacoes deste navegador...");
+  let enabled = false;
+
+  try {
+    const support = window.InvictusNotifications.supportStatus();
+    if (!support.supported) {
+      setStatus(support.reason);
+      return;
+    }
+
+    await window.InvictusNotifications.enable({
+      userType: "admin",
+      uid: currentProfile.uid
+    });
+
+    notificationButton.textContent = "Notificações ativas";
+    setStatus("Notificacoes ativadas para este administrador.");
+    enabled = true;
+  } catch (error) {
+    console.warn("Falha ao ativar notificacoes.", error);
+    setStatus(error && error.message ? error.message : "Nao foi possivel ativar notificacoes.");
+  } finally {
+    if (notificationButton) {
+      notificationButton.disabled = false;
+      if (!enabled) notificationButton.textContent = "Ativar notificações";
+    }
+  }
 }
 
 function getCurrentFilters() {
@@ -432,6 +473,10 @@ logoutButton.addEventListener("click", async () => {
 
 filtersForm.addEventListener("change", applyFilters);
 
+if (notificationButton) {
+  notificationButton.addEventListener("click", enablePanelNotifications);
+}
+
 authModule.onAuthStateChanged(auth, async (user) => {
   if (!user) {
     window.location.replace("login.html");
@@ -447,6 +492,7 @@ authModule.onAuthStateChanged(auth, async (user) => {
       return;
     }
 
+    currentProfile = profile;
     window.sessionStorage.setItem("invictus_admin_profile", JSON.stringify(profile));
     kicker.textContent = `Painel geral - ${profile.name}`;
     watchAllBookings();

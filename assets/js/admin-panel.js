@@ -32,6 +32,7 @@ const todayMetric = document.querySelector("[data-metric-today]");
 const pendingMetric = document.querySelector("[data-metric-pending]");
 const completedMetric = document.querySelector("[data-metric-completed]");
 const logoutButton = document.querySelector("[data-admin-logout]");
+const notificationButton = document.querySelector("[data-enable-notifications]");
 
 let currentProfile = null;
 let unsubscribeBookings = null;
@@ -87,6 +88,46 @@ function slotLockIds(booking) {
 
 function setStatus(message) {
   status.textContent = message;
+}
+
+function setNotificationLoading(isLoading) {
+  if (!notificationButton) return;
+  notificationButton.disabled = isLoading;
+  notificationButton.textContent = isLoading ? "Ativando..." : "Ativar notificações";
+}
+
+async function enablePanelNotifications() {
+  if (!currentProfile || !window.InvictusNotifications) return;
+
+  setNotificationLoading(true);
+  setStatus("Ativando notificacoes deste navegador...");
+  let enabled = false;
+
+  try {
+    const support = window.InvictusNotifications.supportStatus();
+    if (!support.supported) {
+      setStatus(support.reason);
+      return;
+    }
+
+    await window.InvictusNotifications.enable({
+      userType: "barber",
+      uid: currentProfile.uid,
+      barberId: currentProfile.barberId
+    });
+
+    notificationButton.textContent = "Notificações ativas";
+    setStatus("Notificacoes ativadas para este barbeiro.");
+    enabled = true;
+  } catch (error) {
+    console.warn("Falha ao ativar notificacoes.", error);
+    setStatus(error && error.message ? error.message : "Nao foi possivel ativar notificacoes.");
+  } finally {
+    if (notificationButton) {
+      notificationButton.disabled = false;
+      if (!enabled) notificationButton.textContent = "Ativar notificações";
+    }
+  }
 }
 
 function escapeHtml(value) {
@@ -248,6 +289,10 @@ list.addEventListener("click", async (event) => {
     button.disabled = false;
   }
 });
+
+if (notificationButton) {
+  notificationButton.addEventListener("click", enablePanelNotifications);
+}
 
 logoutButton.addEventListener("click", async () => {
   if (unsubscribeBookings) unsubscribeBookings();

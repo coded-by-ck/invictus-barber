@@ -3269,6 +3269,61 @@ p {
   letter-spacing: 0.04em;
 }
 
+.booking-reminder-optin {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 14px;
+  padding: 12px;
+  border: 1px solid rgba(215, 180, 106, 0.24);
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.booking-reminder-optin span {
+  color: rgba(238, 230, 211, 0.78);
+  font-size: 0.84rem;
+  line-height: 1.4;
+}
+
+.booking-reminder-button {
+  flex: 0 0 auto;
+  border: 1px solid rgba(215, 180, 106, 0.42);
+  border-radius: 8px;
+  background: rgba(215, 180, 106, 0.12);
+  color: var(--gold);
+  padding: 10px 12px;
+  font: inherit;
+  font-size: 0.78rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.booking-reminder-button:hover,
+.booking-reminder-button:focus-visible {
+  border-color: rgba(215, 180, 106, 0.72);
+  background: rgba(215, 180, 106, 0.18);
+  outline: none;
+}
+
+.booking-reminder-button:disabled {
+  cursor: wait;
+  opacity: 0.72;
+}
+
+@media (max-width: 520px) {
+  .booking-reminder-optin {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .booking-reminder-button {
+    width: 100%;
+  }
+}
+
 .booking-confirmation-card__actions {
   display: flex;
   flex-wrap: wrap;
